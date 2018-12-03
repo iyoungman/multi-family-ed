@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toolbar;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
@@ -47,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
             mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
             mAudioRecord.startRecording();
         }
+
+//        Toolbar toolbar = (Toolbar)f
+
+
+
+
 
         button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
