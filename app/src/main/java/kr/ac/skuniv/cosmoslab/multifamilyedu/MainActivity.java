@@ -16,16 +16,23 @@ import android.widget.Button;
 import android.widget.Toolbar;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.WaveFormModel;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
 public class MainActivity extends AppCompatActivity {
+    private final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";
     private final String ORIGINAL_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/OriginalWav/구름.wav";
-    private final String RECODE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RecodeWav/구름.wav";;
+    private final String RECODE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RecodeWav/구름.wav";
 
-    private Button button;public AudioRecord mAudioRecord = null;
+    private Button button;
+    private Button button2;
+    private Button button3;
+    public AudioRecord mAudioRecord = null;
     public AudioTrack mAudioTrack = null;
     private int mAudioSource = MediaRecorder.AudioSource.MIC;
     private int mSampleRate = 44100;
@@ -33,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private int mAudioFormat = ENCODING_PCM_16BIT;
     private int mBufferSize = AudioTrack.getMinBufferSize(mSampleRate, mChannelCount, mAudioFormat);
 
-
+    private UserModel userModel;
+    private FileController fileController;
+    private UserController userController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
         int permissionReadStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
         int permissionWriteStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int permissionAudio = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-        if(permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO}, 2);
-        }else {
+        if (permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, 2);
+        } else {
             mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
             mAudioRecord.startRecording();
+            userController = new UserController();
+            fileController = new FileController();
+            fileController.createFilePath();
         }
 
 //        Toolbar toolbar = (Toolbar)f
@@ -68,6 +80,30 @@ public class MainActivity extends AppCompatActivity {
                 int finalScore = analysisWaveFormController.getFinalScore();
 
                 System.out.println(finalScore);
+            }
+        });
+
+        button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //랜덤 추출
+
+                //핸드폰 저장소에 없는 파일이면 다운로드
+                if (!fileController.confirmFile("1","haha.wav")) {
+                    fileController.downloadFileByFileName("haha.wav");
+                }
+
+                //Play
+            }
+        });
+
+        button3 = findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            //로그인 test
+            @Override
+            public void onClick(View v) {
+                userController.signinUser("testid","testpw");
             }
         });
 
