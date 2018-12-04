@@ -93,6 +93,7 @@
             android:layout_weight="0.25"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
+            android:drawableTop="@drawable/play"
             android:text="듣기"
             android:topLeftRadius="10dp"
             android:topRightRadius="10dp" />
@@ -104,6 +105,7 @@
             android:layout_weight="0.25"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
+            android:drawableTop="@drawable/record"
             android:text="녹음"
             android:topLeftRadius="10dp"
             android:topRightRadius="10dp" />
@@ -115,6 +117,7 @@
             android:layout_weight="0.25"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
+            android:drawableTop="@drawable/record_play"
             android:text="녹음확인"
             android:topLeftRadius="10dp"
             android:topRightRadius="10dp" />
@@ -124,6 +127,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:drawableTop="@drawable/submit"
             android:text="제출" />
     </LinearLayout>
 
