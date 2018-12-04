@@ -13,20 +13,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.MediaController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
