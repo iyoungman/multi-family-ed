@@ -17,7 +17,6 @@
             android:id="@+id/idEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:inputType="textPersonName"
             android:hint="아이디"
             android:gravity="center"
@@ -27,8 +26,7 @@
             android:id="@+id/pwEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="phone"
+            android:inputType="textPassword"
             android:hint="비밀번호"
             android:gravity="center"
             android:textColorHint="@color/white_gray"/>
@@ -37,7 +35,6 @@
             android:id="@+id/nameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:inputType="textPersonName"
             android:hint="이름"
             android:gravity="center"
@@ -73,7 +70,6 @@
             android:background="@drawable/button"
             android:textColor="@color/white_greyish"
             android:textStyle="bold" />
-
 
     </LinearLayout>
 

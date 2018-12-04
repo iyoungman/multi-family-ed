@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -64,6 +66,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
     DecodeWaveFileController decodeWaveFileController = new DecodeWaveFileController();
     SharedPreferences sharedPreferences;
+    UserController userController;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +74,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         setContentView(R.layout.activity_play);
 
         sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
+        userController = new UserController(getApplicationContext());
 
         Intent intent = getIntent();
         mUserName = intent.getStringExtra("name");
@@ -312,6 +316,21 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
         System.out.println("점수: " + score);
         System.out.println(sharedPreferences.getInt(mWord,0));
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_signout:
+                userController.signoutUser();
+                finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
