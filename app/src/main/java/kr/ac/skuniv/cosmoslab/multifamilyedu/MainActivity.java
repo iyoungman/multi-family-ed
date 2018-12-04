@@ -18,8 +18,8 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormControll
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.UserModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     private UserModel userModel;
     private FileController fileController;
-    private UserController userController;
+   // private UserController userController = new UserController(getApplicationContext());
+    private filename fn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
         int permissionReadStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
         int permissionWriteStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int permissionAudio = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-        if (permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED) {
+        /*if (permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, 2);
         } else {
             mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
             mAudioRecord.startRecording();
-            userController = new UserController();
-            fileController = new FileController();
+            //userController = new UserController();
+            fileController = new FileController(getApplicationContext());
             fileController.createFilePath();
-        }
+        }*/
 
         button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -80,12 +81,15 @@ public class MainActivity extends AppCompatActivity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //랜덤 추출
+                //랜덤 추출 -> enum
+                String testFileName = fn.haha.toString();
+                testFileName = testFileName + ".wav";
 
                 //핸드폰 저장소에 없는 파일이면 다운로드
-                if (!fileController.confirmFile("1","haha.wav")) {
-                    fileController.downloadFileByFileName("haha.wav");
-                }
+                /*if (!fileController.confirmFile("1","test.wav")) {
+                    Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();*/
+                    fileController.downloadFileByFileName(testFileName);
+                //}
 
                 //Play
             }
@@ -96,10 +100,17 @@ public class MainActivity extends AppCompatActivity {
             //로그인 test
             @Override
             public void onClick(View v) {
-                userController.signinUser("testid","testpw");
+                UserController userController = new UserController(getApplicationContext());
+                userController.signoutUser();
+                finish();
             }
         });
 
-
     }
+
+
+    enum filename {
+        haha,test
+    }
+
 }

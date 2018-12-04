@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.model;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity;
 
 /**
  * Created by chunso on 2018-11-19.

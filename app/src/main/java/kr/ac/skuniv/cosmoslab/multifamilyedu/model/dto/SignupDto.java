@@ -13,13 +13,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SignupDto {
-    private String id;
+    private String userid;
     private String pw;
     private String name;
     private String mobile;
 
-    public SignupDto(String id, String pw, String name, String mobile) {
-        this.id = id;
+    public SignupDto(String userid, String pw, String name, String mobile) {
+        this.userid = userid;
         this.pw = pw;
         this.name = name;
         this.mobile = mobile;

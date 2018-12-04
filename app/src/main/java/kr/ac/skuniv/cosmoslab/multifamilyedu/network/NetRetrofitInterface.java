@@ -3,7 +3,7 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.network;
 
 import java.util.List;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.UserModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -30,7 +30,7 @@ public interface NetRetrofitInterface {
     Call<UserModel> signin(@Field("userid") String userid, @Field("pw") String pw);
 
     @POST("users/signup")
-    Call<UserModel> singup(@Body SignupDto signupDto);
+    Call<Void> singup(@Body SignupDto signupDto);
 
     @GET("downloads/{level}")
     Call<ResponseBody> downloadFileByLevel(@Path("level") String level);
@@ -40,6 +40,4 @@ public interface NetRetrofitInterface {
 
     @GET("downloads")
     Call<List<ResponseBody>> downloadFileLIst();
-
-
 }

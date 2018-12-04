@@ -3,7 +3,7 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 import java.io.File;
 import java.io.IOException;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 import static java.lang.System.arraycopy;
 

@@ -14,18 +14,24 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="한국어 배울거면 와"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".SigninActivity"
+            android:label="인증하자">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SigninActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".LevellistActivity" />
+        <activity
+            android:name=".SignupActivity"
+            android:label="가입하자" />
     </application>
 
 </manifest>

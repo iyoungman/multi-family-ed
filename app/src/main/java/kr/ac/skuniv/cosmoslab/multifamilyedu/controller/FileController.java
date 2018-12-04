@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.UserModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
 import okhttp3.Headers;
 import okhttp3.ResponseBody;
@@ -33,8 +33,8 @@ public class FileController {
     private UserModel userModel;
     Context context;
 
-    public FileController() {
-
+    public FileController(Context context) {
+        this.context = context;
     }
 
     public FileController(UserModel userModel, Context context) {
@@ -45,58 +45,59 @@ public class FileController {
     //Level로 랜덤으로 파일 다운로드하는 메소드
     public void downloadFileByLevel() {
         Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByLevel(userModel.getLevel());
-        Log.i(TAG,"start");
+        Log.i(TAG, "start");
 
         res.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     String fileName = getFileName(response.headers());
-                    boolean writtenToDisk = writeFileToDisk(response.body(),userModel.getLevel(), fileName);
+                    boolean writtenToDisk = writeFileToDisk(response.body(), userModel.getLevel(), fileName);
 
-                    if(writtenToDisk){
+                    if (writtenToDisk) {
                         Toast.makeText(context.getApplicationContext(), "파일 다운로드 성공", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.i(TAG,e.getMessage());
+                    Log.i(TAG, e.getMessage());
                 }
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.i(TAG,t.getMessage());
+                Log.i(TAG, t.getMessage());
+                Toast.makeText(context.getApplicationContext(), "인터넷 연결 실패", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     //파일이름으로 파일 다운로드하는 메소드
     public void downloadFileByFileName(final String fileName) {
-        Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByFileName("1",fileName);
-        Log.i(TAG,"start");
+        Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByFileName("1", fileName);
+        Log.i(TAG, "start");
 
         res.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    boolean writtenToDisk = writeFileToDisk(response.body(),"1", fileName);
+                if (response.isSuccessful()) {
+                    boolean writtenToDisk = writeFileToDisk(response.body(), "1", fileName);
 
-                    if(writtenToDisk){
+                    if (writtenToDisk) {
                         Toast.makeText(context.getApplicationContext(), "파일 다운로드 성공", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.i(TAG + "예외",e.getMessage());
-                    //Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.i(TAG + "실패",t.getMessage());
-                Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
+                Log.i(TAG + "실패", t.getMessage());
+                Toast.makeText(context.getApplicationContext(), "인터넷 연결 실패", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -105,14 +106,14 @@ public class FileController {
     public void createFilePath() {
         File originalDir1 = new File(FILE_PATH + "/ORIGINAL" + "/1");
         File originalDir2 = new File(FILE_PATH + "/ORIGINAL" + "/2");
-        File recodeDir1 = new File(FILE_PATH + "/RECODE" + "/1");
-        File recodeDir2 = new File(FILE_PATH + "/RECODE" + "/2");
+        File recordDir1 = new File(FILE_PATH + "/RECORD" + "/1");
+        File recordDir2 = new File(FILE_PATH + "/RECORD" + "/2");
 
         if (!originalDir1.exists()) {
             originalDir1.mkdirs();
             originalDir2.mkdirs();
-            recodeDir1.mkdirs();
-            recodeDir2.mkdirs();
+            recordDir1.mkdirs();
+            recordDir2.mkdirs();
         }
     }
 
@@ -129,7 +130,7 @@ public class FileController {
     //Response Header에서 파일이름 추출하는 메소드
     private String getFileName(Headers headers) {
         String fileName = headers.get("Content-Disposition");
-        Log.i(TAG+"filename=",fileName);
+        Log.i(TAG + "filename=", fileName);
 
         int index = fileName.indexOf("filename=");
         fileName = fileName.substring(index + 9, fileName.length());
@@ -177,8 +178,5 @@ public class FileController {
             return false;
         }
     }
-
-
-
 
 }

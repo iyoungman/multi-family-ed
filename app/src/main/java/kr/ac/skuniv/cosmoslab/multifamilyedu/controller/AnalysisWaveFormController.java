@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 /**
  * Created by chunso on 2018-11-19.
