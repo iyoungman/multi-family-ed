@@ -40,6 +40,22 @@
         tools:layout_editor_absoluteX="98dp"
         tools:layout_editor_absoluteY="16dp" />
 
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="녹음테스트"
+            tools:layout_editor_absoluteX="98dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="화면전환"
+            tools:layout_editor_absoluteX="98dp"
+            tools:layout_editor_absoluteY="16dp" />
+
     </LinearLayout>
 
 </LinearLayout>

@@ -90,7 +90,7 @@ public class FileController {
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.i(TAG + "예외",e.getMessage());
-                    //Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).showDialogFragment();
                 }
             }
             @Override
@@ -105,14 +105,16 @@ public class FileController {
     public void createFilePath() {
         File originalDir1 = new File(FILE_PATH + "/ORIGINAL" + "/1");
         File originalDir2 = new File(FILE_PATH + "/ORIGINAL" + "/2");
-        File recodeDir1 = new File(FILE_PATH + "/RECODE" + "/1");
-        File recodeDir2 = new File(FILE_PATH + "/RECODE" + "/2");
+        File recodeDir1 = new File(FILE_PATH + "/RECORD" + "/1");
+        File recodeDir2 = new File(FILE_PATH + "/RECORD" + "/2");
+        File ImageDir = new File(FILE_PATH + "/IMAGE");
 
-        if (!originalDir1.exists()) {
+        if (!originalDir1.exists() || !recodeDir1.exists() || !ImageDir.exists()) {
             originalDir1.mkdirs();
             originalDir2.mkdirs();
             recodeDir1.mkdirs();
             recodeDir2.mkdirs();
+            ImageDir.mkdir();
         }
     }
 
