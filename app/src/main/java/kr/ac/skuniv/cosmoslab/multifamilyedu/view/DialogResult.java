@@ -20,7 +20,7 @@ import android.widget.TextView;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 /**
  * Created by chunso on 2018-12-04.
