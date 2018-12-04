@@ -32,6 +32,7 @@
         <activity
             android:name=".SignupActivity"
             android:label="가입하자" />
+        <activity android:name=".view.PlayActivity"></activity>
     </application>
 
 </manifest>
