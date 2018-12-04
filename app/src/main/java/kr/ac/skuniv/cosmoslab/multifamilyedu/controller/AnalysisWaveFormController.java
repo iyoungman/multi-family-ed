@@ -42,7 +42,7 @@ public class AnalysisWaveFormController {
         /*
             가중치 알고리즘 필요..............
          */
-        finalScore = areaScore + shapeScore;
+        finalScore = (int)((areaScore*0.5) + (shapeScore*0.5));
 
         return finalScore;
     }
