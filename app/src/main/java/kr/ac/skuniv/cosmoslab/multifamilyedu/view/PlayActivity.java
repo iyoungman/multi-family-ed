@@ -279,7 +279,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         File imgFile = new File(mImagePath);
         if(imgFile.exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            //imageView.setImageResource(R.drawable.bag);
+            imageView.setImageBitmap(myBitmap);
         }
     }
 
