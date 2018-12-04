@@ -1,13 +1,14 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 
@@ -47,11 +48,13 @@ public class SignupActivity extends AppCompatActivity {
         signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signupDto = new SignupDto(idEditText.getText().toString(),pwEditText.getText().toString(), nameEditText.getText().toString(), mobileEditText.getText().toString());
-                userController.signupUser(signupDto);
+                if(idEditText.getText().length()>0 && pwEditText.getText().length()>0 && nameEditText.getText().length()>0 && mobileEditText.getText().length()>0) {
+                    signupDto = new SignupDto(idEditText.getText().toString(), pwEditText.getText().toString(), nameEditText.getText().toString(), mobileEditText.getText().toString());
+                    userController.signupUser(signupDto);
+                } else {
+                    Toast.makeText(getApplicationContext(), "항목을 작성해주세요", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-
     }
 }

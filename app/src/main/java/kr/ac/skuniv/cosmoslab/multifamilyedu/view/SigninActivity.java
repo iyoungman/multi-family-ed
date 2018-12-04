@@ -1,26 +1,25 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.icu.text.DateFormat;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayActivity;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "SigninActivity";
@@ -31,7 +30,7 @@ public class SigninActivity extends AppCompatActivity {
     private CheckBox autoSigninCheckBox;
 
     private UserController userController;
-    private UserModel signinModel;
+    private FileController fileController;
     SharedPreferences auto;
     SharedPreferences.Editor editor;
     String autoId;
@@ -60,6 +59,9 @@ public class SigninActivity extends AppCompatActivity {
         autoPw = auto.getString("autoPw", null);
 
         userController = new UserController(getApplicationContext());
+        fileController = new FileController(getApplicationContext());
+
+        fileController.createFilePath();
 
         if (auto.getBoolean("autoLogin", true)) {
             Intent intent = new Intent(SigninActivity.this, PlayActivity.class);
@@ -87,6 +89,7 @@ public class SigninActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SigninActivity.this, SignupActivity.class);
                 startActivity(intent);
+//                finish();
             }
         });
 
@@ -95,7 +98,7 @@ public class SigninActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(autoSigninCheckBox.isChecked()){
+        if (autoSigninCheckBox.isChecked()) {
             finish();
         } else {
             idEditText.setText("");
