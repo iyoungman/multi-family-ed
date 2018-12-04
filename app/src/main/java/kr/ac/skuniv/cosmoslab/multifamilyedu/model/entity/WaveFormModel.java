@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.model;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity;
 
 import java.util.List;
 

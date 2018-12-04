@@ -1,6 +1,8 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.model;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class UserModel {
+public class UserModel implements Serializable {
     @SerializedName("userid")
     private String id;
     @SerializedName("pw")
@@ -27,4 +29,6 @@ public class UserModel {
     private String level;
     @SerializedName("count")
     private String count;
+    @SerializedName("response")
+    private String response;
 }
