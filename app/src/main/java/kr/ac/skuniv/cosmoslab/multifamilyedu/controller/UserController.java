@@ -91,6 +91,7 @@ public class UserController {
                     Toast.makeText(context.getApplicationContext(), "회원가입 성공", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, SigninActivity.class);
                     context.startActivity(intent);
+                    //finish
                 } else {
                     Toast.makeText(context.getApplicationContext(), "아이디 중복", Toast.LENGTH_LONG).show();
                 }
