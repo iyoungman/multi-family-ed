@@ -91,7 +91,6 @@ public class FileController {
                     }
                 } else {
                     Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
-
                 }
             }
 

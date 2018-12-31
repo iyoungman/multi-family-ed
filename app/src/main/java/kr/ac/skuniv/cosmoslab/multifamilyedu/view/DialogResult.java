@@ -33,8 +33,9 @@ public class DialogResult extends DialogFragment {
     String mWord;
     int mFinalScore;
 
-    public interface OnCompleteListener{
+    public interface OnCompleteListener {
         void onReplay(int score);
+
         void onNext(String complete, int score);
     }
 
@@ -46,12 +47,10 @@ public class DialogResult extends DialogFragment {
 
         try {
             mCallback = (OnCompleteListener) activity;
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             Log.d("DialogFragmentExample", "Activity doesn't implement the OnCompleteListener interface");
         }
     }
-
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -68,9 +67,9 @@ public class DialogResult extends DialogFragment {
         final ImageView imageView = view.findViewById(R.id.waveformImg);
         final TextView scoreTV = view.findViewById(R.id.scoreTV);
         imageView.setImageBitmap(onDraw());
-        scoreTV.setText(mFinalScore+"점");
+        scoreTV.setText(mFinalScore + "점");
 
-        System.out.println("점수: "+mFinalScore);
+        System.out.println("점수: " + mFinalScore);
 
         replayBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -89,6 +88,7 @@ public class DialogResult extends DialogFragment {
 
         return builder.create();
     }
+
     public Bitmap onDraw() {
         SettingForAnalysisController settingForAnalysis = new SettingForAnalysisController(mOriginalPath, mRecordPath);
 
@@ -123,13 +123,12 @@ public class DialogResult extends DialogFragment {
             originalCanvas.drawLine(i, bitmapY - originalModel.getWaveData()[i], i, bitmapY, originalWaveform);
             recodeCanvas.drawLine(i, bitmapY - recodeModel.getWaveData()[i], i, bitmapY, recodeWaveform);
         }
-
         return waveForm;
     }
 
-    public void setPath(String word){
+    public void setPath(String word) {
         mWord = word;
-        mOriginalPath = FILE_PATH+"/ORIGINAL/" + mWord + ".wav";
-        mRecordPath = FILE_PATH+"/RECORD/" + mWord + ".wav";
+        mOriginalPath = FILE_PATH + "/ORIGINAL/" + mWord + ".wav";
+        mRecordPath = FILE_PATH + "/RECORD/" + mWord + ".wav";
     }
 }

@@ -38,7 +38,6 @@ public class DecodeWaveFileController {
         return mFrameGains;
     }//개별 Gain의 각각의 값
 
-
     public void ReadFile(File inputFile)
             throws java.io.FileNotFoundException,
             IOException {

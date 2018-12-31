@@ -3,8 +3,6 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -19,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +31,8 @@ import java.util.Random;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
 
@@ -41,7 +42,7 @@ import static android.media.AudioFormat.ENCODING_PCM_16BIT;
  * Created by chunso on 2018-12-03.
  */
 
-public class PlayActivity extends AppCompatActivity implements DialogResult.OnCompleteListener{
+public class PlayActivity extends AppCompatActivity implements DialogResult.OnCompleteListener {
     private final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";
 
     TextView textView, highestScoreTV, preScoreTV;
@@ -67,6 +68,9 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     DecodeWaveFileController decodeWaveFileController = new DecodeWaveFileController();
     SharedPreferences sharedPreferences;
     UserController userController;
+    FileController fileController;
+    DrawWaveFormController originalDisplayView;
+    DrawWaveFormController recordDisplayView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +79,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
         sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
         userController = new UserController(getApplicationContext());
+        fileController = new FileController(getApplicationContext());
 
         Intent intent = getIntent();
         mUserName = intent.getStringExtra("name");
@@ -87,6 +92,17 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
         mWord = changeWord();
         setEnvironment(mWord);
+
+        //원본 그래프
+        LinearLayout originalDisplayLayout = (LinearLayout) findViewById(R.id.originalDisplayView);
+        originalDisplayView = new DrawWaveFormController(getApplicationContext(), true);
+        originalDisplayLayout.addView(originalDisplayView);
+        originalDisplayView.setOriginalWaveDisplay(mOriginalPath);
+
+        //실시간 그래프
+        LinearLayout recordDisplayLayout = (LinearLayout) findViewById(R.id.recordDisplayView);
+        recordDisplayView = new DrawWaveFormController(getApplicationContext(), false);
+        recordDisplayLayout.addView(recordDisplayView);
 
         playBtn = findViewById(R.id.playBtn);
         playBtn.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +117,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             @Override
             public void onClick(View v) {
                 onRecord(v);
-
             }
         });
 
@@ -118,22 +133,21 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             @Override
             public void onClick(View v) {
                 File recodeFile = new File(mRecordPath);
-                if(!recodeFile.exists()) {
+                if (!recodeFile.exists()) {
                     Toast.makeText(getApplicationContext(), "녹음부터 하시기바랍니다.", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     showDialogFragment();
+                    recordDisplayView.clearWaveData();
                 }
             }
         });
-
-
     }
 
     @Override
     public void onReplay(int score) {
         mPreScore = mHighestScore;
         saveScore(score);
-        if(mPreScore != mHighestScore)
+        if (mPreScore != mHighestScore)
             highestScoreTV.setText(String.valueOf(mHighestScore));
         mPreScore = score;
         preScoreTV.setText(String.valueOf(mPreScore));
@@ -151,16 +165,18 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             isRecording = false;
             Toast.makeText(this, "녹음이 중지됩니다...", Toast.LENGTH_SHORT).show();
             recordBtn.setText("녹음");
-            decodeWaveFileController.pcmToWav(mPCMPath,mRecordPath);
+            decodeWaveFileController.pcmToWav(mPCMPath, mRecordPath);
         } else {
             isRecording = true;
             recordBtn.setText("녹음중");
+            recordDisplayView.clearWaveData();
             Toast.makeText(this, "녹음이 시작됩니다...", Toast.LENGTH_SHORT).show();
 
             if (mAudioRecord == null) {
                 mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
                 mAudioRecord.startRecording();
             }
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -174,16 +190,17 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
                     while (isRecording) {
                         int ret = mAudioRecord.read(readData, 0, mBufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
+                        //int bufferSize = ret;
+                        recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
+                        //addValue(len);///////////////////////
 
-                        int bufferSize = ret;
-
+                        //저장
                         try {
                             fos.write(readData, 0, mBufferSize);    //  읽어온 readData 를 파일에 write 함
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-
                     mAudioRecord.stop();
                     mAudioRecord.release();
                     mAudioRecord = null;
@@ -240,7 +257,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                     }
                     mAudioTrack.stop();
                     mAudioTrack.release();
@@ -257,7 +273,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
     }
 
-    public void showDialogFragment(){
+    public void showDialogFragment() {
         Bundle args = new Bundle();
         args.putString("word", mWord);
         DialogFragment newFragment = new DialogResult();
@@ -265,47 +281,47 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         newFragment.show(getFragmentManager(), "dialog");
     }
 
-    public void setEnvironment(String word){
-        mOriginalPath = FILE_PATH+"/ORIGINAL/" + mWord + ".wav";
-        mRecordPath = FILE_PATH+"/RECORD/" + mWord + ".wav";
-        mPCMPath = FILE_PATH+"/RECORD/" + mWord + ".pcm";
-        mImagePath = FILE_PATH + "/IMAGE/"  + mWord + ".png";
+    public void setEnvironment(String word) {
+        mOriginalPath = FILE_PATH + "/ORIGINAL/" + mWord + ".wav";
+        mRecordPath = FILE_PATH + "/RECORD/" + mWord + ".wav";
+        mPCMPath = FILE_PATH + "/RECORD/" + mWord + ".pcm";
+        mImagePath = FILE_PATH + "/IMAGE/" + mWord + ".png";
         textView.setText(mWord);
         preScoreTV.setText("0");
 
-        mHighestScore = sharedPreferences.getInt(mWord,0);
+        mHighestScore = sharedPreferences.getInt(mWord, 0);
         highestScoreTV.setText(String.valueOf(mHighestScore));
 
-        File imgFile = new File(mImagePath);
+        /*File imgFile = new File(mImagePath);
         if(imgFile.exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imageView.setImageBitmap(myBitmap);
-        }
+        }*/
     }
 
-    public String changeWord(){
+    public String changeWord() {
         Random random = new Random();
         WaveFileModel[] waveFileModels = WaveFileModel.values();
         boolean findWord = false;
         int rand = 0;
         while (!findWord) {
             rand = random.nextInt(173);
-            if(sharedPreferences.getInt(waveFileModels[rand].toString(),0) == 0)
+            if (sharedPreferences.getInt(waveFileModels[rand].toString(), 0) == 0)
                 findWord = true;
         }
-        System.out.println("변경된 단어"+ waveFileModels[rand].toString());
+        System.out.println("변경된 단어" + waveFileModels[rand].toString());
         return waveFileModels[rand].toString();
     }
 
-    public void saveScore(int score){
-        if(mHighestScore != 0 && score > mHighestScore){
+    public void saveScore(int score) {
+        if (mHighestScore != 0 && score > mHighestScore) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(mWord, score);
             editor.commit();
 
             mHighestScore = score;
             System.out.println("값이 높아서 저장됨.");
-        }else if(mHighestScore == 0){
+        } else if (mHighestScore == 0) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(mWord, score);
             editor.commit();
@@ -315,7 +331,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
 
         System.out.println("점수: " + score);
-        System.out.println(sharedPreferences.getInt(mWord,0));
+        System.out.println(sharedPreferences.getInt(mWord, 0));
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -332,6 +348,4 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
