@@ -7,37 +7,49 @@ import java.util.Collections;
 import java.util.List;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
+import lombok.Getter;
 
 /**
  * Created by chunso on 2018-11-19.
  */
 
+@Getter
 public class AnalysisWaveFormController {
     private static final String TAG = "ANALISIS_WAVEFORM_CONTROLLER";
     private static final int HIDEN_EXTREME_BOUND = 2;
     private static final int EXTREME_POINT_BOUND = 5;
 
-    private WaveFormModel mOriginalData;
-    private WaveFormModel mRecodeData;
-
-    public WaveFormModel getmOriginalData(){
-        return this.mOriginalData;
-    }
-
-    public WaveFormModel getmRecodeData(){
-        return this.mRecodeData;
-    }
+    private WaveFormModel mOriginalModel;
+    private WaveFormModel mRecodeModel;
 
     public AnalysisWaveFormController(WaveFormModel _originalData, WaveFormModel _recodeData){
-        this.mOriginalData = _originalData;
-        this.mRecodeData = _recodeData;
+        this.mOriginalModel = _originalData;
+        this.mRecodeModel = _recodeData;
     }
 
     public int getFinalScore(){
         int finalScore = 0;
-        int areaScore = calculateAreaScore(mOriginalData.getWaveData(), mRecodeData.getWaveData());
-        int shapeScore = calculateShapeScore(mOriginalData, mRecodeData);
-        Log.d(TAG, "areaScore: "+areaScore+" 모양점수: "+shapeScore);
+        int areaScore = calculateAreaScore(mOriginalModel.getWaveData(), mRecodeModel.getWaveData());
+        int shapeScore = calculateShapeScore(mOriginalModel, mRecodeModel);
+        System.out.println("//////////////////////////////////////////////////////////////////////");
+        System.out.println("//////////////////////  ORIGINAL DATA  //////////////////////////////");
+        System.out.println("//////////////////////////////////////////////////////////////////////");
+        System.out.println("데이터 길이:  "+mOriginalModel.getWaveData().length);
+        System.out.println("최대값 인덱스 :  "+ mOriginalModel.getMaximumValueIndex());
+        System.out.println("최대값:  "+mOriginalModel.getWaveData()[mOriginalModel.getMaximumValueIndex()]);
+        System.out.println("극점 개수:  "+mOriginalModel.getFinalExtremePoints().size());
+        System.out.println("숨겨진 극점 개수:  "+mOriginalModel.getHidenCheckPoints().size());
+        System.out.println(" ");
+        System.out.println("//////////////////////////////////////////////////////////////////////");
+        System.out.println("////////////////////////  RECORD DATA  //////////////////////////////");
+        System.out.println("//////////////////////////////////////////////////////////////////////");
+        System.out.println("데이터 길이:  "+mRecodeModel.getWaveData().length);
+        System.out.println("최대값 인덱스 :  "+ mRecodeModel.getMaximumValueIndex());
+        System.out.println("최대값:  "+mRecodeModel.getWaveData()[mRecodeModel.getMaximumValueIndex()]);
+        System.out.println("극점 개수:  "+mRecodeModel.getFinalExtremePoints().size());
+        System.out.println("숨겨진 극점 개수:  "+mRecodeModel.getHidenCheckPoints().size());
+        System.out.println("//////////////////////////////////////////////////////////////////////");
+        Log.d(TAG, "면적점수: "+areaScore+" 모양점수: "+shapeScore);
 
         /*
             가중치 알고리즘 필요..............
