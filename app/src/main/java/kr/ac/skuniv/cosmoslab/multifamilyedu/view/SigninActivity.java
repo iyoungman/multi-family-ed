@@ -52,6 +52,7 @@ public class SigninActivity extends AppCompatActivity {
         signinBtn = (Button) findViewById(R.id.loginBtn);
         signupBtn = (Button) findViewById(R.id.signupBtn);
         autoSigninCheckBox = (CheckBox) findViewById(R.id.autoSigninCheckBox);
+        getSupportActionBar().setTitle(R.string.signin_name);
 
         auto = getSharedPreferences("autoSignin", Activity.MODE_PRIVATE);
         editor = auto.edit();
@@ -89,7 +90,6 @@ public class SigninActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SigninActivity.this, SignupActivity.class);
                 startActivity(intent);
-//                finish();
             }
         });
 
