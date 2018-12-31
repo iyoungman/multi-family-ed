@@ -24,7 +24,6 @@ public class PretreatmentController {
     private int[] mRecordDrawModel;
     private int maximumValue;
 
-
     public boolean run(String originalFilePath, String recordFilePath) {
         DecodeWaveFileController decoderOriginalWAV = new DecodeWaveFileController();
         DecodeWaveFileController decoderRecodeWAV = new DecodeWaveFileController();

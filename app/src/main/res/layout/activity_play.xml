@@ -27,14 +27,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="이전점수"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/preScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
         </LinearLayout>
 
         <TextView
@@ -58,25 +58,61 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="최고점수"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/highestScoreTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/waveformImg"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_weight="0.5"
-        android:scaleType="fitXY"
-        app:srcCompat="@android:color/transparent" />
+        android:background="@drawable/border"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/recordDisplayView"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_margin="5dp"/>
+
+        <LinearLayout
+            android:id="@+id/originalDisplayView"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_margin="5dp"/>
+
+    </FrameLayout>
+
+    <!-- <LinearLayout
+         android:id="@+id/displayView"
+         android:layout_width="fill_parent"
+         android:layout_height="0dp"
+         android:layout_weight="0.5"
+         android:orientation="vertical"
+         android:padding="1dip"
+         android:background="@drawable/border"/>-->
+
+    <!-- <LinearLayout
+         android:id="@+id/displayView2"
+         android:layout_width="fill_parent"
+         android:layout_height="0dp"
+         android:layout_weight="0.5"
+         android:orientation="vertical"
+         android:padding="1dip"
+         android:background="@drawable/border"/>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -91,6 +127,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:background="@drawable/button"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
             android:drawableTop="@drawable/play"
@@ -103,6 +140,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:background="@drawable/button"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
             android:drawableTop="@drawable/record"
@@ -115,6 +153,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:background="@drawable/button"
             android:bottomLeftRadius="10dp"
             android:bottomRightRadius="10dp"
             android:drawableTop="@drawable/record_play"
@@ -127,8 +166,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:background="@drawable/button"
             android:drawableTop="@drawable/submit"
             android:text="제출" />
+
     </LinearLayout>
 
 </LinearLayout>
