@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.SettingForAnalysisController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 /**
@@ -90,22 +90,21 @@ public class DialogResult extends DialogFragment {
     }
 
     public Bitmap onDraw() {
-        SettingForAnalysisController settingForAnalysis = new SettingForAnalysisController(mOriginalPath, mRecordPath);
+        PretreatmentController pretreatmentController = new PretreatmentController();
+        pretreatmentController.run(mOriginalPath, mRecordPath);
 
-        settingForAnalysis.controller();
+        int[] originalArray = pretreatmentController.getMOriginalDrawModel();
+        int[] recordArray = pretreatmentController.getMRecordDrawModel();
+        int maximumValue = pretreatmentController.getMaximumValue();
 
-        WaveFormModel originalModel = settingForAnalysis.getmOriginalData();
-        WaveFormModel recodeModel = settingForAnalysis.getmRecodeData();
-
-        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(originalModel, recodeModel);
+        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
         mFinalScore = analysisWaveform.getFinalScore();
 
-        originalModel = analysisWaveform.getmOriginalData();
-        recodeModel = analysisWaveform.getmRecodeData();
+        WaveFormModel originalModel = analysisWaveform.getMOriginalModel();
+        WaveFormModel recordModel = analysisWaveform.getMRecodeModel();
 
-        int bitmapX = originalModel.getWaveData().length > recodeModel.getWaveData().length ? originalModel.getWaveData().length : recodeModel.getWaveData().length;
-        int bitmapY = originalModel.getWaveData()[originalModel.getMaximumValueIndex()] > recodeModel.getWaveData()[recodeModel.getMaximumValueIndex()]
-                ? originalModel.getWaveData()[originalModel.getMaximumValueIndex()] : recodeModel.getWaveData()[recodeModel.getMaximumValueIndex()];
+        int bitmapX = originalArray.length > recordArray.length ? originalArray.length : recordArray.length;
+        int bitmapY = maximumValue;
 
         Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
         Canvas originalCanvas = new Canvas(waveForm);
@@ -119,10 +118,10 @@ public class DialogResult extends DialogFragment {
         recodeWaveform.setColor(Color.RED);
         recodeWaveform.setAlpha(60);
 
-        for (int i = 0; i < bitmapX; i++) {
-            originalCanvas.drawLine(i, bitmapY - originalModel.getWaveData()[i], i, bitmapY, originalWaveform);
-            recodeCanvas.drawLine(i, bitmapY - recodeModel.getWaveData()[i], i, bitmapY, recodeWaveform);
-        }
+        for (int i = 0; i < originalArray.length; i++)
+            originalCanvas.drawLine(i, bitmapY - originalArray[i], i, bitmapY, originalWaveform);
+        for (int i = 0; i < recordArray.length; i++)
+            recodeCanvas.drawLine(i, bitmapY - recordArray[i], i, bitmapY, recodeWaveform);
         return waveForm;
     }
 
