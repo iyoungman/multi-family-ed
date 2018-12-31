@@ -55,9 +55,11 @@ public class AnalysisWaveFormController {
         int bigValue = 0, smallValue = 0;
         int sumBigValue = 0, sumSmallValue = 0;
         double score = 0;
+        int smallLength = originalData.length > recodeData.length ? recodeData.length : originalData.length;
+        int bigLength = originalData.length > recodeData.length ? originalData.length : recodeData.length;
 
         //둘중 큰 그래프 길이만큼 비교, 시작점 맞춤, 끝점 다름
-        for (int i = 0; i < originalData.length; i++) {
+        for (int i = 0; i < smallLength; i++) {
             if (originalData[i] >= recodeData[i]) {
                 bigValue = originalData[i];
                 smallValue = recodeData[i];
@@ -68,6 +70,15 @@ public class AnalysisWaveFormController {
             sumBigValue = sumBigValue + bigValue;
             sumSmallValue = sumSmallValue + smallValue;
         }
+
+        if(bigLength == originalData.length) {
+            for (int i = smallLength; i < bigLength; i++)
+                sumBigValue += originalData[i];
+        }else{
+            for (int i = smallLength; i < bigLength; i++)
+                sumBigValue += recodeData[i];
+        }
+
         score = Math.round((sumSmallValue / (double) sumBigValue) * 100);//소수점 반올림
         return (int)score;
     }
@@ -106,8 +117,6 @@ public class AnalysisWaveFormController {
      *
      */
     private WaveFormModel findExtremePoints(WaveFormModel data) throws Exception{
-        int startIndex = data.getStartIndex();
-        int endIndex = data.getEndIndex();
         int[] firstSlopeValue = data.getFirstSlopeData();
         int[] secondSlopeValue = data.getSecondSlopeData();
 
@@ -117,7 +126,7 @@ public class AnalysisWaveFormController {
         int sign = 1,index=-1;
 
         //1차적으로 1차 미분값이 부호가 변하는 체크포인트
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = 0; i < firstSlopeValue.length; i++) {
             if (firstSlopeValue[i] >= 0 && sign < 0) {
                 checkPoints.add(i);
                 sign = 1; index++;
@@ -134,7 +143,7 @@ public class AnalysisWaveFormController {
 
         sign = 1;
         int k =0;
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = 0; i < secondSlopeValue.length; i++) {
             if (secondSlopeValue[i] > 0 && sign < 0) {
                 temp.add(i);
                 sign = 1;
@@ -142,7 +151,7 @@ public class AnalysisWaveFormController {
                 temp.add(i);
                 sign = -1;
             }
-            if (i == checkPoints.get(k) || i == endIndex-1) {
+            if (i == checkPoints.get(k) || i == secondSlopeValue.length-1) {
                 if (temp.size() > 1) {
                     for (int j = 0; j < temp.size(); j++) {
                         if (j % 2 == 1)
@@ -223,13 +232,13 @@ public class AnalysisWaveFormController {
                     if (j != 0)
                         checkPointIndex1 = checkPoints.get(j-1);
                     else
-                        checkPointIndex1 = data.getStartIndex();
+                        checkPointIndex1 = 0;
                     break;
                 }
 
                 if (j+1 == checkPoints.size() && checkPointIndex2 == 0) {
                     checkPointIndex1 = checkPoints.get(j);
-                    checkPointIndex2 = data.getEndIndex();
+                    checkPointIndex2 = data.getWaveData().length - 1;
                 }
             }
 
@@ -275,8 +284,8 @@ public class AnalysisWaveFormController {
         List<Integer> R_compareValue = new ArrayList<>();
         List<Double> O_rateOfLengths, R_rateOfLengths;
 
-        O_compareValue.add(originalModel.getStartIndex()); O_compareValue.addAll(originalExtreme); O_compareValue.add(originalModel.getEndIndex());
-        R_compareValue.add(recodeModel.getStartIndex()); R_compareValue.addAll(recodeExtreme); R_compareValue.add(recodeModel.getEndIndex());
+        O_compareValue.add(0); O_compareValue.addAll(originalExtreme); O_compareValue.add(originalModel.getWaveData().length - 1);
+        R_compareValue.add(0); R_compareValue.addAll(recodeExtreme); R_compareValue.add(recodeModel.getWaveData().length - 1);
 
         int largeSize = O_compareValue.size() > R_compareValue.size() ? O_compareValue.size() : R_compareValue.size();//compareValue.size() = 시작점,끝점 포함 극점 개수
         int smallSize = O_compareValue.size() < R_compareValue.size() ? O_compareValue.size() : R_compareValue.size();//결국은 큰 구간으로 비교하는 것
