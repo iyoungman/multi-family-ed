@@ -12,6 +12,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.WordListActivity;
 import lombok.Getter;
 import lombok.Setter;
 import retrofit2.Call;
@@ -67,26 +68,6 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-       /* Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
-        res.enqueue(new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful()) {
-                    userModel = response.body();
-                    Intent intent = new Intent(context, DayActivity.class);
-                    intent.putExtra("login_model", response.body());
-                    context.startActivity(intent);
-                } else {
-                    Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.i(TAG + "실패", t.getMessage());
-                Toast.makeText(context.getApplicationContext(), "인터넷 연결 실패", Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
     //회원가입 메소드

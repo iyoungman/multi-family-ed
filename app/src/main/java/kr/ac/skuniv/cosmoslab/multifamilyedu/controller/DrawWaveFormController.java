@@ -16,10 +16,9 @@ public class DrawWaveFormController extends View {
 
     private static final String TAG = "DrawWaveFormController";
     private final Handler handler;
-    private ByteArrayOutputStream waveData = new ByteArrayOutputStream(8000 * 4);
+    private ByteArrayOutputStream waveData = new ByteArrayOutputStream(8000 * 10 * 2);
     private Paint waveBaseLine;
     private boolean fileTypeCheck;
-    //private final Paint fftDataLine = new Paint();
 
     public DrawWaveFormController(Context context, boolean fileTypeCheck) {
         super(context);
