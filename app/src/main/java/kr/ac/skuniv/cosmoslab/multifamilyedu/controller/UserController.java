@@ -11,6 +11,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.WordListActivity;
 import lombok.Getter;
 import lombok.Setter;
 import retrofit2.Call;
@@ -64,7 +65,7 @@ public class UserController {
                     }
 
                     Toast.makeText(context.getApplicationContext(), "로그인 성공", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(context, PlayActivity.class);
+                    Intent intent = new Intent(context, WordListActivity.class);
                     intent.putExtra("loginmodel", response.body());
                     context.startActivity(intent);
                 } else {
