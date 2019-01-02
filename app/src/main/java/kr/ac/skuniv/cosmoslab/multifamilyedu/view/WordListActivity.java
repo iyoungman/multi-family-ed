@@ -1,8 +1,8 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -29,13 +29,18 @@ public class WordListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wordlist);
 
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra("user_id");
+        String level = intent.getStringExtra("day");
+        Toast.makeText(getApplicationContext(), userId + level, Toast.LENGTH_LONG).show();
+
         items = new ArrayList<String>();
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, items);
         listview = (ListView) findViewById(R.id.listView) ;
         listview.setAdapter(adapter) ;
 
         wordInfoController = new WordInfoController(getApplicationContext());
-        WordInfoDto wordInfoDto = wordInfoController.getWordListByUserid("1","testid");
+        WordInfoDto wordInfoDto = wordInfoController.getWordListByUserid(level,userId);
 
         if(wordInfoDto != null) {
             words = wordInfoDto.getWordlist();

@@ -13,21 +13,23 @@ import java.util.ArrayList;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.WordListActivity;
 
 /**
  * Created by chunso on 2019-01-02.
  */
 
 public class DayPageAdapter extends BaseAdapter {
+    private final String userId;
     private ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
     private ArrayList<Boolean> buttonStatus = new ArrayList<Boolean>();
     private boolean[] enableBtn;
     String TAG = "TAG";
 
 
-    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels) {
+    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels, String userId) {
         this.wordPassModels = wordPassModels;
+        this.userId = userId;
         enableBtn = new boolean[wordPassModels.size()];
         for (int i = 0; i < wordPassModels.size(); i++) {
             buttonStatus.add(false);
@@ -78,10 +80,10 @@ public class DayPageAdapter extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PlayActivity.class);
+                Intent intent = new Intent(context, WordListActivity.class);
+                intent.putExtra("user_id", userId);
                 intent.putExtra("day", wordPassModel.getDay());
                 parent.getContext().startActivity(intent);
-
             }
         });
 
