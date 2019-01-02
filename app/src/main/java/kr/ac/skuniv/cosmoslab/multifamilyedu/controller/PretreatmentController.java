@@ -1,5 +1,9 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
+import android.content.Context;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -15,14 +19,18 @@ import static java.lang.System.arraycopy;
 
 @Getter
 public class PretreatmentController {
-    static final int NOISE_BOUND = 400;
+    static final int NOISE_BOUND = 500;
 
+    private Context context;
     private WaveFormModel mOriginalModel = new WaveFormModel();
     private WaveFormModel mRecordModel = new WaveFormModel();
 
     private int[] mOriginalDrawModel;
     private int[] mRecordDrawModel;
     private int maximumValue;
+    public PretreatmentController(Context context){
+        this.context = context;
+    }
 
     public boolean run(String originalFilePath, String recordFilePath) {
         DecodeWaveFileController decoderOriginalWAV = new DecodeWaveFileController();
@@ -48,59 +56,113 @@ public class PretreatmentController {
         originalModel.setWaveData(decoderOriginalWAV.getFrameGains());
         recordModel.setWaveData(decoderRecodeWAV.getFrameGains());
 
-        if(originalModel.getWaveData() == null || recordModel.getWaveData() == null)
+        if(originalModel.getWaveData() == null || recordModel.getWaveData() == null || recordModel.getWaveData().length < 50)
             return false;
 
         int count = 0;
-        while(count < 10){
-            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
-            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
-            count++;
+        try {
+            while(count < 10){
+                originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+                recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
+                count++;
+            }
+        }catch (IndexOutOfBoundsException e){
+            messageBox("smoothingForDrawWaveform", e.getMessage());
+            return false;
         }
 
-        recordModel.setWaveData(
-                normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
-        );
+        try {
+            recordModel.setWaveData(
+                    normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
+            );
+        }catch (ArithmeticException e){
+            messageBox("normalizeSoundSize", e.getMessage());
+            return false;
+        }
 
-        originalModel = findStartIndexAndEndIndex(originalModel);
-        recordModel = findStartIndexAndEndIndex(recordModel);
+        try {
+            originalModel = findStartIndexAndEndIndex(originalModel);
+            recordModel = findStartIndexAndEndIndex(recordModel);
+        }catch (ArrayIndexOutOfBoundsException e){
+            messageBox("findStartIndexAndEndIndex", e.getMessage());
+            return false;
+        }
 
 
-        mOriginalDrawModel = setDrawableData(originalModel);
-        mRecordDrawModel = setDrawableData(recordModel);
+        try {
+            mOriginalDrawModel = setDrawableData(originalModel);
+            mRecordDrawModel = setDrawableData(recordModel);
+        }catch (ArrayIndexOutOfBoundsException e){
+            messageBox("setDrawableData", e.getMessage());
+            return false;
+        }
+
         maximumValue = findMaximumValueIndex(mOriginalDrawModel) > findMaximumValueIndex(mRecordDrawModel) ? mOriginalDrawModel[findMaximumValueIndex(mOriginalDrawModel)] : mRecordDrawModel[findMaximumValueIndex(mRecordDrawModel)];
 
-
-        syncSpeechTime(originalModel, recordModel);
-
-        count = 0;
-        while(count < 5){
-            mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(),4));
-            mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(),4));
-            count++;
+        try {
+            syncSpeechTime(originalModel, recordModel);
+        }catch (ArithmeticException | NullPointerException e) {
+            messageBox("syncSpeechTime", e.getMessage());
+            return false;
         }
 
-        int[] originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 3);
-        int[] recodeSlope = findSlopeValue(mRecordModel.getWaveData(),3);
+        count = 0;
+        try {
+            while(count < 5){
+                mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(),4));
+                mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(),4));
+                count++;
+            }
+        }catch (IndexOutOfBoundsException e){
+            messageBox("smoothingForDrawWaveform", e.getMessage());
+            return false;
+        }
+
+        int[] originalSlope;
+        int[] recodeSlope;
+        try {
+            originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 3);
+            recodeSlope = findSlopeValue(mRecordModel.getWaveData(),3);
+        }catch (IndexOutOfBoundsException e){
+            messageBox("findSlopeValue", e.getMessage());
+            return false;
+        }
 
         count = 0;
-        while(count < 5){
-            originalSlope = smoothingForDrawWaveform(originalSlope, 4);
-            recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
-            count++;
+        try {
+            while(count < 5){
+                originalSlope = smoothingForDrawWaveform(originalSlope, 4);
+                recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
+                count++;
+            }
+        }catch (IndexOutOfBoundsException e){
+            messageBox("smoothingForDrawWaveform", e.getMessage());
+            return false;
         }
 
         mOriginalModel.setFirstSlopeData(originalSlope);
         mRecordModel.setFirstSlopeData(recodeSlope);
 
-        int[] originalSlope1 = findSlopeValue(mOriginalModel.getFirstSlopeData(), 3);
-        int[] recodeSlope1 = findSlopeValue(mRecordModel.getFirstSlopeData(), 3);
+        int[] originalSlope1;
+        int[] recodeSlope1;
+        try{
+            originalSlope1 = findSlopeValue(mOriginalModel.getFirstSlopeData(), 3);
+            recodeSlope1 = findSlopeValue(mRecordModel.getFirstSlopeData(), 3);
+        }catch (IndexOutOfBoundsException e){
+            messageBox("findSlopeValue", e.getMessage());
+            return false;
+        }
 
         count = 0;
-        while(count < 5){
-            originalSlope1 = smoothingForDrawWaveform(originalSlope1, 4);
-            recodeSlope1 = smoothingForDrawWaveform(recodeSlope1, 4);
-            count++;
+        try {
+            while(count < 5){
+                originalSlope1 = smoothingForDrawWaveform(originalSlope1, 4);
+                recodeSlope1 = smoothingForDrawWaveform(recodeSlope1, 4);
+                count++;
+            }
+        }catch (IndexOutOfBoundsException e){
+            messageBox("smoothingForDrawWaveform", e.getMessage());
+            return false;
         }
 
         mOriginalModel.setSecondSlopeData(originalSlope1);
@@ -109,7 +171,7 @@ public class PretreatmentController {
         return true;
     }
 
-    private int[] smoothingForDrawWaveform(int[] waveData, int windowSize) {
+    private int[] smoothingForDrawWaveform(int[] waveData, int windowSize) throws ArrayIndexOutOfBoundsException{
         int leng = waveData.length;
         int[] resultData = new int[leng];
         float drawableData;
@@ -129,7 +191,7 @@ public class PretreatmentController {
         return resultData;
     }
 
-    private PretreatmentModel findStartIndexAndEndIndex(PretreatmentModel pretreatmentModel) {
+    private PretreatmentModel findStartIndexAndEndIndex(PretreatmentModel pretreatmentModel) throws ArrayIndexOutOfBoundsException{
         int[] waveData = pretreatmentModel.getWaveData();
 
         for(int i = 0 ; i < waveData.length ; i++){
@@ -150,104 +212,26 @@ public class PretreatmentController {
         return pretreatmentModel;
     }
 
-    private int[] normalizeSoundSize(int[] originalWaveData, int[] recodeWaveData) {
-        double graphRatio = getAverageFromHistogram(originalWaveData, originalWaveData.length) / (double) (getAverageFromHistogram(recodeWaveData, recodeWaveData.length));//최댓값으로 비율 구함
+    private int[] normalizeSoundSize(int[] originalWaveData, int[] recordWaveData) throws ArithmeticException{
+        double graphRatio = 0.0;
+        try{
+            graphRatio = getAverageFromHistogram(originalWaveData, originalWaveData.length) / (double) (getAverageFromHistogram(recordWaveData, recordWaveData.length));//최댓값으로 비율 구함
+        }catch (ArrayIndexOutOfBoundsException e){
+            messageBox("getAverageFromHistogram",e.getMessage());
+            return null;
+        }
 
         //비율 구하기
         graphRatio = Math.round(graphRatio * 100) / 100.0;//소수점 둘째자리까지 반올림
         graphRatio = Math.abs(graphRatio);//절대값
 
-        for(int i = 0; i< recodeWaveData.length; i++)
-            recodeWaveData[i] = (int)(recodeWaveData[i] * graphRatio);
+        for(int i = 0; i< recordWaveData.length; i++)
+            recordWaveData[i] = (int)(recordWaveData[i] * graphRatio);
 
-        return recodeWaveData;
+        return recordWaveData;
     }
 
-    private void syncSpeechTime(PretreatmentModel originalModel, PretreatmentModel recordModel) {
-        boolean whoIsBigger = true; //original이 더 크다고 가정
-        int originalDataLengDiff = originalModel.getEndIndex() - originalModel.getStartIndex()+1;
-        int recordDataLengDiff = recordModel.getEndIndex() - recordModel.getStartIndex()+1;
-
-        if(recordDataLengDiff > originalDataLengDiff)
-            whoIsBigger = false;
-
-        if(whoIsBigger){
-            int lengDiff = originalDataLengDiff - recordDataLengDiff;
-            double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;
-            double syncGratio = Math.round(((2 * lengGratio - 1)*100)) / 100.0;
-            int syncLeng = (int)Math.round(lengDiff * syncGratio);
-            int index = Math.round(recordDataLengDiff / syncLeng);
-
-            originalModel.setWaveData(setArrFormatIfLarge(originalModel,originalDataLengDiff,0));
-            recordModel.setWaveData(setArrFormatIfLarge(recordModel, originalDataLengDiff, index));
-        }else{
-            int lengDiff = recordDataLengDiff - originalDataLengDiff;
-            double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;
-            double syncGratio = Math.round(((-2 * lengGratio + 3)*100)) / 100.0;
-            int syncLeng = (int)Math.round(lengDiff * syncGratio);
-            int index = Math.round(recordDataLengDiff / syncLeng);
-
-            originalModel.setWaveData(setArrFormatIfSmall(originalModel, originalDataLengDiff, 0));
-            recordModel.setWaveData(setArrFormatIfSmall(recordModel, recordDataLengDiff, index));
-        }
-
-        mOriginalModel.setWaveData(originalModel.getWaveData());
-        mRecordModel.setWaveData(recordModel.getWaveData());
-    }
-
-    private int[] setArrFormatIfLarge(PretreatmentModel pretreatmentModel, int arrLeng, int copyIndex) {
-        int[] newArr = new int[arrLeng];
-        int[] waveArr = pretreatmentModel.getWaveData();
-        int waveDataStartIndex = pretreatmentModel.getStartIndex();
-        int waveDataEndIndex = pretreatmentModel.getEndIndex();
-
-        int count = 1; int index = 0;
-        while(waveDataStartIndex <= waveDataEndIndex){
-            newArr[index] = waveArr[waveDataStartIndex];
-            if(count == copyIndex){
-                newArr[index+1] = newArr[index];
-                index+=2; count = 1;waveDataStartIndex++;
-                continue;
-            }
-            index++; count++; waveDataStartIndex++;
-        }
-
-        int[] resultArr = new int[index];;
-        if(index < arrLeng)
-            arraycopy(newArr, 0, resultArr, 0, index);
-        else
-            resultArr = newArr;
-
-        return resultArr;
-    }
-
-    private int[] setArrFormatIfSmall(PretreatmentModel pretreatmentModel, int arrLeng, int removeIndex) {
-        int[] newArr = new int[arrLeng];
-        int[] waveArr = pretreatmentModel.getWaveData();
-        int waveDataStartIndex = pretreatmentModel.getStartIndex();
-        int waveDataEndIndex = pretreatmentModel.getEndIndex();
-
-        int count = 1; int index = 0;
-        while(waveDataStartIndex <= waveDataEndIndex){
-            if(count == removeIndex){
-                count = 1;waveDataStartIndex++;
-                continue;
-            }else if(index < arrLeng) {
-                newArr[index] = waveArr[waveDataStartIndex];
-            }
-            index++; count++; waveDataStartIndex++;
-        }
-
-        int[] resultArr = new int[index];;
-        if(index < arrLeng)
-            arraycopy(newArr, 0, resultArr, 0, index);
-        else
-            resultArr = newArr;
-
-        return resultArr;
-    }
-
-    private int getAverageFromHistogram(int[] waveData, int getnumFrames) {
+    private int getAverageFromHistogram(int[] waveData, int getnumFrames) throws ArrayIndexOutOfBoundsException{
         int num = (int) (Math.round(getnumFrames * 0.1));//10% 개수
         int [] HistogramGain = new int[waveData.length];
         arraycopy(waveData,0,HistogramGain,0,waveData.length);
@@ -274,7 +258,99 @@ public class PretreatmentController {
         return average;
     }
 
-    private int[] findSlopeValue(int[] waveData, int windowSize) {
+    private void syncSpeechTime(PretreatmentModel originalModel, PretreatmentModel recordModel) throws ArithmeticException, NullPointerException{
+        boolean whoIsBigger = true; //original이 더 크다고 가정
+        int originalDataLengDiff = originalModel.getEndIndex() - originalModel.getStartIndex()+1;
+        int recordDataLengDiff = recordModel.getEndIndex() - recordModel.getStartIndex()+1;
+
+        if(recordDataLengDiff > originalDataLengDiff)
+            whoIsBigger = false;
+
+        if(whoIsBigger){
+            int lengDiff = originalDataLengDiff - recordDataLengDiff;
+            double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;
+            double syncGratio = Math.round(((2 * lengGratio - 1)*100)) / 100.0;
+            int syncLeng = (int)Math.round(lengDiff * syncGratio);
+            int index = Math.round(recordDataLengDiff / syncLeng);
+
+            try {
+                originalModel.setWaveData(setArrFormatIfLarge(originalModel,originalDataLengDiff,0));
+                recordModel.setWaveData(setArrFormatIfLarge(recordModel, originalDataLengDiff, index));
+            }catch (ArrayIndexOutOfBoundsException e){
+                messageBox("setArrFormatIfLarge",e.getMessage());
+            }
+        }else{
+            int lengDiff = recordDataLengDiff - originalDataLengDiff;
+            double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;
+            double syncGratio = Math.round(((-2 * lengGratio + 3)*100)) / 100.0;
+            int syncLeng = (int)Math.round(lengDiff * syncGratio);
+            int index = Math.round(recordDataLengDiff / syncLeng);
+
+            try {
+                originalModel.setWaveData(setArrFormatIfSmall(originalModel, originalDataLengDiff, 0));
+                recordModel.setWaveData(setArrFormatIfSmall(recordModel, recordDataLengDiff, index));
+            }catch (ArrayIndexOutOfBoundsException e) {
+                messageBox("setArrFormatIfSmall", e.getMessage());
+            }
+        }
+
+        mOriginalModel.setWaveData(originalModel.getWaveData());
+        mRecordModel.setWaveData(recordModel.getWaveData());
+    }
+
+    private int[] setArrFormatIfLarge(PretreatmentModel pretreatmentModel, int arrLeng, int copyIndex) throws ArrayIndexOutOfBoundsException{
+        int[] newArr = new int[arrLeng];
+        int[] waveArr = pretreatmentModel.getWaveData();
+        int waveDataStartIndex = pretreatmentModel.getStartIndex();
+        int waveDataEndIndex = pretreatmentModel.getEndIndex();
+
+        int count = 1; int index = 0;
+        while(waveDataStartIndex <= waveDataEndIndex){
+            newArr[index] = waveArr[waveDataStartIndex];
+            if(count == copyIndex){
+                newArr[index+1] = newArr[index];
+                index+=2; count = 1;waveDataStartIndex++;
+                continue;
+            }
+            index++; count++; waveDataStartIndex++;
+        }
+
+        int[] resultArr = new int[index];;
+        if(index < arrLeng)
+            arraycopy(newArr, 0, resultArr, 0, index);
+        else
+            resultArr = newArr;
+
+        return resultArr;
+    }
+
+    private int[] setArrFormatIfSmall(PretreatmentModel pretreatmentModel, int arrLeng, int removeIndex) throws ArrayIndexOutOfBoundsException{
+        int[] newArr = new int[arrLeng];
+        int[] waveArr = pretreatmentModel.getWaveData();
+        int waveDataStartIndex = pretreatmentModel.getStartIndex();
+        int waveDataEndIndex = pretreatmentModel.getEndIndex();
+
+        int count = 1; int index = 0;
+        while(waveDataStartIndex <= waveDataEndIndex){
+            if(count == removeIndex){
+                count = 1;waveDataStartIndex++;
+                continue;
+            }else if(index < arrLeng) {
+                newArr[index] = waveArr[waveDataStartIndex];
+            }
+            index++; count++; waveDataStartIndex++;
+        }
+
+        int[] resultArr = new int[index];;
+        if(index < arrLeng)
+            arraycopy(newArr, 0, resultArr, 0, index);
+        else
+            resultArr = newArr;
+
+        return resultArr;
+    }
+
+    private int[] findSlopeValue(int[] waveData, int windowSize) throws ArrayIndexOutOfBoundsException{
         int[] resultData = new int[waveData.length];
         int i = 0;
         for(i = windowSize ; i < waveData.length ; i++)
@@ -300,7 +376,7 @@ public class PretreatmentController {
         return maximumValueIndex;
     }
 
-    private int[] setDrawableData(PretreatmentModel waveData){
+    private int[] setDrawableData(PretreatmentModel waveData) throws ArrayIndexOutOfBoundsException{
         int startIndex = waveData.getStartIndex();
         int endIndex = waveData.getEndIndex();
         int[] inputData = waveData.getWaveData();
@@ -321,5 +397,16 @@ public class PretreatmentController {
         arraycopy(inputData, arrStart, analysisData, 0, arrEnd);
 
         return  analysisData;
+    }
+
+    private void messageBox(String method, String message) {
+        Log.d("EXCEPTION: " + method,  message);
+
+        AlertDialog.Builder messageBox = new AlertDialog.Builder(context);
+        messageBox.setTitle(method);
+        messageBox.setMessage(message);
+        messageBox.setCancelable(false);
+        messageBox.setNeutralButton("OK", null);
+        messageBox.show();
     }
 }

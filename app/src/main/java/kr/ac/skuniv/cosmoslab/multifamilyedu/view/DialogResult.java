@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
@@ -63,7 +64,7 @@ public class DialogResult extends DialogFragment {
         setPath(args.getString("word"));
 
         final Button replayBtn = view.findViewById(R.id.replayBtn);
-        final Button nextBtn = view.findViewById(R.id.nextBtn);
+        final Button selectWordBtn = view.findViewById(R.id.select_word);
         final ImageView imageView = view.findViewById(R.id.waveformImg);
         final TextView scoreTV = view.findViewById(R.id.scoreTV);
         imageView.setImageBitmap(onDraw());
@@ -78,7 +79,7 @@ public class DialogResult extends DialogFragment {
             }
         });
 
-        nextBtn.setOnClickListener(new View.OnClickListener() {
+        selectWordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
@@ -90,15 +91,22 @@ public class DialogResult extends DialogFragment {
     }
 
     public Bitmap onDraw() {
-        PretreatmentController pretreatmentController = new PretreatmentController();
-        pretreatmentController.run(mOriginalPath, mRecordPath);
-
+        PretreatmentController pretreatmentController = new PretreatmentController(getContext());
+        if(!pretreatmentController.run(mOriginalPath, mRecordPath)){
+            Toast.makeText(getContext(), "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            return null;
+        }
         int[] originalArray = pretreatmentController.getMOriginalDrawModel();
         int[] recordArray = pretreatmentController.getMRecordDrawModel();
         int maximumValue = pretreatmentController.getMaximumValue();
 
-        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
+        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(getContext(),pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
         mFinalScore = analysisWaveform.getFinalScore();
+
+        if(mFinalScore == 0) {
+            Toast.makeText(getContext(), "점수를 계산하는데 문제가 발생되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            return null;
+        }
 
         WaveFormModel originalModel = analysisWaveform.getMOriginalModel();
         WaveFormModel recordModel = analysisWaveform.getMRecodeModel();
