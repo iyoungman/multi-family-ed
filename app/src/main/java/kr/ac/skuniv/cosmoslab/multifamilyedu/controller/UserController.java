@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.DayActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
@@ -38,34 +39,42 @@ public class UserController {
         this.context = context;
     }
 
-    public UserController(UserModel userModel, Context context) {
+/*    public UserController(UserModel userModel, Context context) {
         this.userModel = userModel;
         this.context = context;
-    }
+    }*/
 
     public UserModel getUserModel() {
         return this.userModel;
     }
 
     //로그인 메소드
-    public void signinUser(final String userid, final String pw, final Boolean autoCheck) {
-        Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
+    public void signinUser(final String userid, final String pw) {
+        final Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    userModel = res.execute().body();
+                } catch (Exception e) {
+
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+       /* Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
         res.enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful()) {
-                    auto = context.getSharedPreferences("autoSignin", context.MODE_PRIVATE);
-                    editor = auto.edit();
-                    if (autoCheck) {
-                        editor.putString("autoId", userid);
-                        editor.putString("autoPw", pw);
-                        editor.putBoolean("autoLogin", true);
-                        editor.commit();
-                    }
-
-                    Toast.makeText(context.getApplicationContext(), "로그인 성공", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(context, PlayActivity.class);
-                    intent.putExtra("loginmodel", response.body());
+                    userModel = response.body();
+                    Intent intent = new Intent(context, DayActivity.class);
+                    intent.putExtra("login_model", response.body());
                     context.startActivity(intent);
                 } else {
                     Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
@@ -77,8 +86,7 @@ public class UserController {
                 Log.i(TAG + "실패", t.getMessage());
                 Toast.makeText(context.getApplicationContext(), "인터넷 연결 실패", Toast.LENGTH_LONG).show();
             }
-        });
-
+        });*/
     }
 
     //회원가입 메소드

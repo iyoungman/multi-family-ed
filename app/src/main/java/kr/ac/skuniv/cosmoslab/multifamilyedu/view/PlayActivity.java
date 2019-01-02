@@ -82,16 +82,16 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         fileController = new FileController(getApplicationContext());
 
         Intent intent = getIntent();
-        mUserName = intent.getStringExtra("name");
-//        mWord = intent.getStringExtra("word");
+//        mUserName = intent.getStringExtra("name");
+        mWord = intent.getStringExtra("word");
+        setEnvironment(mWord);
 
         highestScoreTV = findViewById(R.id.highestScoreTV);
         preScoreTV = findViewById(R.id.preScore);
         textView = findViewById(R.id.wordTV);
         imageView = findViewById(R.id.waveformImg);
 
-        mWord = changeWord();
-        setEnvironment(mWord);
+//        mWord = changeWord();
 
         //원본 그래프
         LinearLayout originalDisplayLayout = (LinearLayout) findViewById(R.id.originalDisplayView);
@@ -156,8 +156,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     @Override
     public void onNext(String complete, int score) {
         saveScore(score);
-        mWord = changeWord();
-        setEnvironment(mWord);
+        finish();
     }
 
     public void onRecord(View view) {
@@ -169,7 +168,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         } else {
             isRecording = true;
             recordBtn.setText("녹음중");
-            recordDisplayView.clearWaveData();
+            //recordDisplayView.clearWaveData();
             Toast.makeText(this, "녹음이 시작됩니다...", Toast.LENGTH_SHORT).show();
 
             if (mAudioRecord == null) {
@@ -191,7 +190,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
                     while (isRecording) {
                         int ret = mAudioRecord.read(readData, 0, mBufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
                         //int bufferSize = ret;
-                        recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
+                        //recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
                         //addValue(len);///////////////////////
 
                         //저장
@@ -235,6 +234,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
                         fis = new FileInputStream(path);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
+                        return;
                     }
 
                     DataInputStream dis = new DataInputStream(fis);
@@ -299,7 +299,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }*/
     }
 
-    public String changeWord() {
+    /*public String changeWord() {
         Random random = new Random();
         WaveFileModel[] waveFileModels = WaveFileModel.values();
         boolean findWord = false;
@@ -311,7 +311,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         System.out.println("변경된 단어" + waveFileModels[rand].toString());
         return waveFileModels[rand].toString();
-    }
+    }*/
 
     public void saveScore(int score) {
         if (mHighestScore != 0 && score > mHighestScore) {
