@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -48,7 +47,7 @@ public class DayActivity extends AppCompatActivity {
         }
 
         ListView listView = findViewById(R.id.listView);
-        DayPageAdapter adapter = new DayPageAdapter(wordPassModels);
+        DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId());
 
         listView.setAdapter(adapter);
     }
