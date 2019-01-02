@@ -20,6 +20,7 @@ import android.widget.Toast;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "SigninActivity";
@@ -52,7 +53,7 @@ public class SigninActivity extends AppCompatActivity {
         signinBtn = (Button) findViewById(R.id.loginBtn);
         signupBtn = (Button) findViewById(R.id.signupBtn);
         autoSigninCheckBox = (CheckBox) findViewById(R.id.autoSigninCheckBox);
-        getSupportActionBar().setTitle(R.string.signin_name);
+//        getSupportActionBar().setTitle(R.string.signin_name);
 
         auto = getSharedPreferences("autoSignin", Activity.MODE_PRIVATE);
         editor = auto.edit();
@@ -64,8 +65,10 @@ public class SigninActivity extends AppCompatActivity {
 
         fileController.createFilePath();
 
-        if (auto.getBoolean("autoLogin", true)) {
-            Intent intent = new Intent(SigninActivity.this, PlayActivity.class);
+        if (autoId != null) {
+            userController.signinUser(autoId, autoPw);
+            Intent intent = new Intent(getApplicationContext(), DayActivity.class);
+            intent.putExtra("login_model", userController.getUserModel());
             startActivity(intent);
             finish();
         }
@@ -73,15 +76,21 @@ public class SigninActivity extends AppCompatActivity {
         signinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                userController.signinUser(idEditText.getText().toString(), pwEditText.getText().toString());
+                Intent intent = new Intent(getApplicationContext(), DayActivity.class);
+                intent.putExtra("login_model", userController.getUserModel());
+                startActivity(intent);
                 try {
-                    Boolean autoCheck = false;
-                    if (autoSigninCheckBox.isChecked()) {
-                        autoCheck = true;
+                    if(autoSigninCheckBox.isChecked()) {
+                        editor.putString("autoId", idEditText.getText().toString());
+                        editor.putString("autoPw", pwEditText.getText().toString());
+                        editor.putBoolean("autoLogin", true);
+                        editor.commit();
                     }
-                    userController.signinUser(idEditText.getText().toString(), pwEditText.getText().toString(), autoCheck);
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "로그인 실패", Toast.LENGTH_SHORT).show();
                 }
+                finish();
             }
         });
 
