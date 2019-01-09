@@ -38,6 +38,8 @@ public class DialogResult extends DialogFragment {
         void onReplay(int score);
 
         void onNext(String complete, int score);
+
+        void startStatusActivity(int score);
     }
 
     private OnCompleteListener mCallback;
@@ -65,10 +67,21 @@ public class DialogResult extends DialogFragment {
 
         final Button replayBtn = view.findViewById(R.id.replayBtn);
         final Button selectWordBtn = view.findViewById(R.id.select_word);
-        final ImageView imageView = view.findViewById(R.id.waveformImg);
+        final Button statusBtn = view.findViewById(R.id.start_status_activity_button);
+//        final ImageView imageView = view.findViewById(R.id.waveformImg);
         final TextView scoreTV = view.findViewById(R.id.scoreTV);
-        imageView.setImageBitmap(onDraw());
+        final TextView passTV = view.findViewById(R.id.passTV);
+//        imageView.setImageBitmap(onDraw());
+        onDraw();
         scoreTV.setText(mFinalScore + "점");
+        if(mFinalScore > 80) {
+            passTV.setText("합격");
+            passTV.setTextColor(Color.BLUE);
+        }
+        else {
+            passTV.setText("불합격");
+            passTV.setTextColor(Color.RED);
+        }
 
         System.out.println("점수: " + mFinalScore);
 
@@ -84,6 +97,14 @@ public class DialogResult extends DialogFragment {
             public void onClick(View v) {
                 dismiss();
                 mCallback.onNext("next", mFinalScore);
+            }
+        });
+
+        statusBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                mCallback.startStatusActivity(mFinalScore);
             }
         });
 

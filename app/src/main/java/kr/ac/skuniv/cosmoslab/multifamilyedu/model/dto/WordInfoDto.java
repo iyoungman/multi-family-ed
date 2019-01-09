@@ -18,14 +18,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class WordInfoDto {
+public class WordInfoDto implements Serializable {
     private List<String> wordlist;
-    private Map<String, Boolean> wordpassinfo;
+    private Map<String, String> wordpassinfo;
 
     public WordInfoDto() {
     }
 
-    public WordInfoDto(List<String> wordlist, Map<String, Boolean> wordpassinfo) {
+    public WordInfoDto(List<String> wordlist, Map<String, String> wordpassinfo) {
         this.wordlist = wordlist;
         this.wordpassinfo = wordpassinfo;
     }
