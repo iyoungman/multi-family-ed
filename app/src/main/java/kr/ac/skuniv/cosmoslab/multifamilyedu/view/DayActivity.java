@@ -25,8 +25,6 @@ import lombok.Getter;
  */
 
 public class DayActivity extends AppCompatActivity {
-    final int PASS_NEXT_DAY_COUNT = 7;
-
     private String mDay;
     private String mUserId;
     private String mUserPw;
