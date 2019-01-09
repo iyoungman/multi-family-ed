@@ -49,4 +49,5 @@ public interface NetRetrofitInterface {
     @GET("/users/{userid}/level/{level}")
     Call<Void> convertToNextDay(@Path("userid") String userid, @Path("level") String level);
 
+
 }

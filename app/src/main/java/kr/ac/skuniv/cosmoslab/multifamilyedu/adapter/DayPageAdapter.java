@@ -1,5 +1,6 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -27,12 +28,14 @@ public class DayPageAdapter extends BaseAdapter {
     private ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
     private ArrayList<Boolean> buttonStatus = new ArrayList<Boolean>();
     private boolean[] enableBtn;
+    private Context mContext;
     String TAG = "TAG";
 
 
-    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels, String userId) {
+    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels, String userId, Context context) {
         this.wordPassModels = wordPassModels;
         this.userId = userId;
+        this.mContext = context;
         enableBtn = new boolean[wordPassModels.size()];
         for (int i = 0; i < wordPassModels.size(); i++) {
             buttonStatus.add(false);
@@ -83,6 +86,7 @@ public class DayPageAdapter extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Activity activity = (Activity) mContext;
                 DayStatusController dayStatusController = new DayStatusController(parent.getContext());
                 dayStatusController.getWordListByUserid(wordPassModel.getDay(), userId);
                 if(dayStatusController.getWordInfoDto() == null)
@@ -93,7 +97,8 @@ public class DayPageAdapter extends BaseAdapter {
                 intent.putExtra("user_id", userId);
                 intent.putExtra("day", wordPassModel.getDay());
                 intent.putExtra("word_info", wordInfoDto);
-                parent.getContext().startActivity(intent);
+                ((Activity)parent.getContext()).startActivityForResult(intent, 3000);
+//                parent.getContext().startActivity(intent);
             }
         });
 
