@@ -1,22 +1,29 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.PretreatmentModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
+import lombok.Getter;
+
+@Getter
 public class DrawWaveFormController extends View {
 
     private static final String TAG = "DrawWaveFormController";
     private final Handler handler;
-    private ByteArrayOutputStream waveData = new ByteArrayOutputStream(8000 * 10 * 2);
+    private ByteArrayOutputStream waveData = new ByteArrayOutputStream();
     private Paint waveBaseLine;
     private boolean fileTypeCheck;
 
@@ -40,11 +47,10 @@ public class DrawWaveFormController extends View {
 
     private Paint setRecordWaveBaseLine() {
         Paint waveRecordLine = new Paint();
-        waveRecordLine.setAntiAlias(true);
         waveRecordLine.setAlpha(120);
         waveRecordLine.setColor(Color.DKGRAY);
         waveRecordLine.setStyle(Paint.Style.FILL_AND_STROKE);
-        waveRecordLine.setStrokeWidth(50.0f);
+        waveRecordLine.setStrokeWidth(23.0f);
         waveRecordLine.setStrokeCap(Paint.Cap.ROUND);
 
         return waveRecordLine;
@@ -89,19 +95,10 @@ public class DrawWaveFormController extends View {
                 }
             }
         }
-		/*{
-			double[] ffts = NormalizeWaveData.convertFFT(ds);
-			float lastY = 0.0f;
-			for (int x = 0; x < width; x++) {
-				float y = height * (float)(1.0 - ffts[x]);
-				canvas.drawLine(x + margin, lastY, x+1 + margin, y, fftDataLine);
-				lastY = y;
-			}
-		}*/
     }
 
     private float drawWaveLine(Canvas canvas, double value, float x, float y, int height, int margin) {
-        float nextY = height * -1 * (float) (value - 1.0);  // / 2.0f;
+        float nextY = height * -1 * (float) (value - 1.0) / 2.0f;
         waveBaseLine = fileTypeCheck ? setOriginalWaveBaseLine() : setRecordWaveBaseLine();
         canvas.drawLine(x + margin, y + margin, x + 1 + margin, nextY + margin, waveBaseLine);
         return nextY;
@@ -153,5 +150,6 @@ public class DrawWaveFormController extends View {
             }
         });
     }
+
 
 }

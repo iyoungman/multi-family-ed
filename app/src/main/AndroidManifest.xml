@@ -31,8 +31,9 @@
         <activity
             android:name=".view.PlayActivity"
             android:label="@string/play_name" />
-        <activity android:name=".view.DayActivity"/>
-        <activity android:name=".view.WordListActivity"/>
+        <activity android:name=".view.DayActivity" />
+        <activity android:name=".view.WordListActivity" />
+        <activity android:name=".view.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>

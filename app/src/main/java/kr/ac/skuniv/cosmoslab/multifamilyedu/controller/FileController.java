@@ -73,7 +73,7 @@ public class FileController {
         });
     }
 
-    //파일이름으로 파일 다운로드하는 메소드
+    /*//파일이름으로 파일 다운로드하는 메소드
     public void downloadFileByFileName(final String fileName) {
         Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByFileName("1", fileName);
         Log.i(TAG, "start");
@@ -100,6 +100,33 @@ public class FileController {
                 Toast.makeText(context.getApplicationContext(), "인터넷 연결 실패", Toast.LENGTH_LONG).show();
             }
         });
+    }*/
+
+    //파일이름으로 파일 다운로드하는 메소드
+    public void  downloadFileByFileName(final String fileName) {
+        final Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByFileName("1",fileName);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ResponseBody body = res.execute().body();
+                    boolean writtenToDisk = writeFileToDisk(body, "1", fileName);
+                    if (writtenToDisk) {
+                        Toast.makeText(context.getApplicationContext(), "파일 다운로드 성공", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e) {
+
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //파일 디렉토리 만드는 메소드
@@ -120,8 +147,8 @@ public class FileController {
     }
 
     //디렉토리에 파일있는지 확인하는 메소드
-    public boolean confirmFile(String level, String fileName) {
-        File file = new File(FILE_PATH + "/ORIGINAL/" + level + "/" + fileName);
+    public boolean confirmFile(String fileName) {
+        File file = new File(FILE_PATH + "/ORIGINAL/" + fileName);
         if (!file.exists()) {
             return false;
         } else {
@@ -143,7 +170,7 @@ public class FileController {
     private boolean writeFileToDisk(ResponseBody responseBody, String level, String fileName) {
         try {
             // todo change the file location/name according to your needs
-            File futureStudioIconFile = new File(FILE_PATH + "/ORIGINAL/" + level + File.separator + fileName);
+            File futureStudioIconFile = new File(FILE_PATH + "/ORIGINAL/" + File.separator + fileName);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;

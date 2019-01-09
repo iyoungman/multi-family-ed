@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
@@ -28,6 +30,7 @@ public class WordInfoController {
     private static final String TAG = "WordInfoController";
     private UserModel userModel;
     private WordInfoDto wordInfoDto;
+    private Map<String, String> setPassInfo;
     Context context;
 
     public WordInfoController(Context context) {
@@ -85,5 +88,27 @@ public class WordInfoController {
             e.printStackTrace();
         }
         return wordInfoDto;
+    }
+
+    public Map<String,String> setWordPassInfo(final String userid, final String wordname) {
+        final Call<Map<String,String>> res = NetRetrofit.getInstance().getNetRetrofitInterface().setWordPassInfo(userid, wordname);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    setPassInfo = res.execute().body();
+//                    Toast.makeText(context.getApplicationContext(), "합격입니다.", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+//                    Toast.makeText(context.getApplicationContext(), "합격 정보 송신 실패", Toast.LENGTH_LONG).show();
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return setPassInfo;
     }
 }

@@ -1,11 +1,11 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.network;
 
 
-import java.util.List;
+import java.util.Map;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -42,5 +42,11 @@ public interface NetRetrofitInterface {
 
     @GET("wordinfo/level/{level}/userid/{userid}")
     Call<WordInfoDto> getWordListByLevelAndUserid(@Path("level") String level, @Path("userid") String userid);
+
+    @GET("wordinfo/userid/{userid}/wordname/{wordname}")
+    Call<Map<String, String>> setWordPassInfo(@Path("userid") String userid, @Path("wordname") String wordname);
+
+    @GET("/users/{userid}/level/{level}") // level = nextlevel , 최종 level 처리는 클라이언트에서
+    Call<Void> convertToNextDay(@Path("userid") String userid, @Path("level") String level);
 
 }

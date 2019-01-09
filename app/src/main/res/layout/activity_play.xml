@@ -70,12 +70,11 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <!--<FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="0.5"
-        android:background="@drawable/border"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -94,7 +93,16 @@
             android:padding="10dp"
             android:layout_margin="5dp"/>
 
-    </FrameLayout>
+    </FrameLayout>-->
+
+    <ImageView
+        android:id="@+id/displayView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:scaleType="fitXY"
+        app:srcCompat="@android:color/transparent" />
+
 
     <!-- <LinearLayout
          android:id="@+id/displayView"
