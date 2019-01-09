@@ -173,7 +173,13 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1111 && resultCode == 2222) {
-            imageView.setImageBitmap(onDraw());
+            if(onDraw() == null){
+                imageView.setImageBitmap(onDrawOriginalWaveForm());
+            } else {
+                imageView.setImageBitmap(onDraw());
+
+                //
+            }
         }
     }
 
@@ -200,8 +206,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         else
             Toast.makeText(getApplicationContext(), "모든 단어를 합격하셨습니다.", Toast.LENGTH_LONG).show();
-
-        imageView.setImageBitmap(onDrawOriginalWaveForm());
     }
 
     @Override
