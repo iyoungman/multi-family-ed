@@ -48,4 +48,5 @@ public interface NetRetrofitInterface {
     @GET("/users/{userid}/level/{level}") // level = nextlevel , 최종 level 처리는 클라이언트에서
     Call<Void> convertToNextDay(@Path("userid") String userid, @Path("level") String level);
 
+
 }
