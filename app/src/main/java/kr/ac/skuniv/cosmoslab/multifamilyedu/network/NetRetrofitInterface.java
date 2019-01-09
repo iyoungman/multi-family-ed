@@ -3,6 +3,7 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.network;
 
 import java.util.Map;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import okhttp3.ResponseBody;
@@ -45,7 +46,7 @@ public interface NetRetrofitInterface {
     @GET("wordinfo/userid/{userid}/wordname/{wordname}")
     Call<Map<String, String>> setWordPassInfo(@Path("userid") String userid, @Path("wordname") String wordname);
 
-    @GET("/users/{userid}/level/{level}") // level = nextlevel , 최종 level 처리는 클라이언트에서
+    @GET("/users/{userid}/level/{level}")
     Call<Void> convertToNextDay(@Path("userid") String userid, @Path("level") String level);
 
 }

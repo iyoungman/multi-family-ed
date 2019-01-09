@@ -14,6 +14,7 @@ import java.io.OutputStream;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
+import lombok.Getter;
 import okhttp3.Headers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -27,10 +28,12 @@ import retrofit2.Response;
  * <p>
  * Description:
  */
+@Getter
 public class FileController {
     private static final String TAG = "FileController";
     private static final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";
     private UserModel userModel;
+    private boolean response;
     Context context;
 
     public FileController(Context context) {
@@ -52,7 +55,7 @@ public class FileController {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     String fileName = getFileName(response.headers());
-                    boolean writtenToDisk = writeFileToDisk(response.body(), userModel.getLevel(), fileName);
+                    boolean writtenToDisk = writeFileToDisk(response.body(), fileName);
 
                     if (writtenToDisk) {
                         Toast.makeText(context.getApplicationContext(), "파일 다운로드 성공", Toast.LENGTH_LONG).show();
@@ -104,26 +107,35 @@ public class FileController {
 
     //파일이름으로 파일 다운로드하는 메소드
     public void  downloadFileByFileName(final String fileName) {
+        response = false;
         final Call<ResponseBody> res = NetRetrofit.getInstance().getNetRetrofitInterface().downloadFileByFileName("1",fileName);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    ResponseBody body = res.execute().body();
-                    boolean writtenToDisk = writeFileToDisk(body, "1", fileName);
-                    if (writtenToDisk) {
-                        Toast.makeText(context.getApplicationContext(), "파일 다운로드 성공", Toast.LENGTH_LONG).show();
+                    Response<ResponseBody> respon = res.execute();
+                    ResponseBody body;
+                    if (respon.raw().code() == 200) {
+                        body = respon.body();
                     } else {
-                        Toast.makeText(context.getApplicationContext(), "파일 다운로드 실패", Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "파일 다운 실패");
+                        body = null;
+                    }
+
+                    boolean writtenToDisk = writeFileToDisk(body, fileName);
+                    if (writtenToDisk) {
+                        response = true;
+                    } else {
+                        response = false;
                     }
                 } catch (Exception e) {
-
+                    response = false;
                 }
             }
         }).start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -131,17 +143,13 @@ public class FileController {
 
     //파일 디렉토리 만드는 메소드
     public void createFilePath() {
-        File originalDir1 = new File(FILE_PATH + "/ORIGINAL" + "/1");
-        File originalDir2 = new File(FILE_PATH + "/ORIGINAL" + "/2");
-        File recodeDir1 = new File(FILE_PATH + "/RECORD" + "/1");
-        File recodeDir2 = new File(FILE_PATH + "/RECORD" + "/2");
+        File originalDir = new File(FILE_PATH + "/ORIGINAL");
+        File recodeDir = new File(FILE_PATH + "/RECORD");
         File ImageDir = new File(FILE_PATH + "/IMAGE");
 
-        if (!originalDir1.exists() || !recodeDir1.exists() || !ImageDir.exists()) {
-            originalDir1.mkdirs();
-            originalDir2.mkdirs();
-            recodeDir1.mkdirs();
-            recodeDir2.mkdirs();
+        if (!originalDir.exists() || !recodeDir.exists() || !ImageDir.exists()) {
+            originalDir.mkdirs();
+            recodeDir.mkdirs();
             ImageDir.mkdir();
         }
     }
@@ -167,7 +175,7 @@ public class FileController {
     }
 
     //파일 저장하는 메소드
-    private boolean writeFileToDisk(ResponseBody responseBody, String level, String fileName) {
+    private boolean writeFileToDisk(ResponseBody responseBody, String fileName) {
         try {
             // todo change the file location/name according to your needs
             File futureStudioIconFile = new File(FILE_PATH + "/ORIGINAL/" + File.separator + fileName);

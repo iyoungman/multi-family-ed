@@ -3,9 +3,15 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.util.Map;
+
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
+import lombok.Getter;
+import okhttp3.Headers;
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * MultiFamilyEdu_Android
@@ -14,24 +20,56 @@ import retrofit2.Call;
  * <p>
  * Description:
  */
+@Getter
 public class DayStatusController {
     private WordInfoDto wordInfoDto;
     private Context context;
+    private Map<String, String> setPassInfo;
 
     public DayStatusController(Context context) {
         this.context = context;
     }
 
 
-    public WordInfoDto getWordListByUserid(final String level, final String userid) {
+    public void getWordListByUserid(final String level, final String userid) {
         final Call<WordInfoDto> res = NetRetrofit.getInstance().getNetRetrofitInterface().getWordListByLevelAndUserid(level, userid);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    wordInfoDto = res.execute().body();
+                    Response<WordInfoDto> respon = res.execute();
+                    if(respon.raw().code() == 200) {
+                        wordInfoDto = respon.body();
+                    } else {
+                        wordInfoDto = null;
+                    }
                 } catch (Exception e) {
-                    Toast.makeText(context.getApplicationContext(), "리스트 정보 받기 실패", Toast.LENGTH_LONG).show();
+                    wordInfoDto = null;
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(1500);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<String,String> setWordPassInfo(final String userid, final String wordname) {
+        final Call<Map<String,String>> res = NetRetrofit.getInstance().getNetRetrofitInterface().setWordPassInfo(userid, wordname);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response<Map<String,String>> respon = res.execute();
+                    if(respon.raw().code() == 200) {
+                        setPassInfo = respon.body();
+                    } else {
+                        setPassInfo = null;
+                    }
+                } catch (Exception e) {
+                    setPassInfo = null;
                 }
             }
         }).start();
@@ -41,10 +79,6 @@ public class DayStatusController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
-        return wordInfoDto;
+        return setPassInfo;
     }
 }

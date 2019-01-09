@@ -18,8 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
@@ -33,6 +37,8 @@ public class DialogResult extends DialogFragment {
     String mRecordPath;
     String mWord;
     int mFinalScore;
+    private Map<String,String> setPassInfo;
+    private DayStatusController dayStatusController;
 
     public interface OnCompleteListener {
         void onReplay(int score);
@@ -64,15 +70,19 @@ public class DialogResult extends DialogFragment {
 
         Bundle args = getArguments();
         setPath(args.getString("word"));
+        mFinalScore = args.getInt("finalScore");
 
         final Button replayBtn = view.findViewById(R.id.replayBtn);
         final Button selectWordBtn = view.findViewById(R.id.select_word);
         final Button statusBtn = view.findViewById(R.id.start_status_activity_button);
-//        final ImageView imageView = view.findViewById(R.id.waveformImg);
         final TextView scoreTV = view.findViewById(R.id.scoreTV);
         final TextView passTV = view.findViewById(R.id.passTV);
-//        imageView.setImageBitmap(onDraw());
-        onDraw();
+
+        setPassInfo = new HashMap<>();
+        dayStatusController = new DayStatusController(getContext());
+
+//        onDraw();
+
         scoreTV.setText(mFinalScore + "점");
         if(mFinalScore > 80) {
             passTV.setText("합격");
@@ -110,6 +120,8 @@ public class DialogResult extends DialogFragment {
 
         return builder.create();
     }
+
+
 
     public Bitmap onDraw() {
         PretreatmentController pretreatmentController = new PretreatmentController(getContext());

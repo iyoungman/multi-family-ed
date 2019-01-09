@@ -84,8 +84,11 @@ public class DayPageAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 DayStatusController dayStatusController = new DayStatusController(parent.getContext());
-                WordInfoDto wordInfoDto = dayStatusController.getWordListByUserid(wordPassModel.getDay(), userId);
+                dayStatusController.getWordListByUserid(wordPassModel.getDay(), userId);
+                if(dayStatusController.getWordInfoDto() == null)
+                    return;
 
+                WordInfoDto wordInfoDto = dayStatusController.getWordInfoDto();
                 Intent intent = new Intent(context, SelectModeActivity.class);
                 intent.putExtra("user_id", userId);
                 intent.putExtra("day", wordPassModel.getDay());

@@ -80,7 +80,7 @@ public class DayActivity extends AppCompatActivity {
                     .build();
             wordPassModels.add(listViewItem);
         }
-        for(int i =userDay+1 ;i<= 17 ; i++){
+        for(int i =userDay+1 ;i<= 20 ; i++){
             WordPassModel listViewItem = WordPassModel.builder()
                     .day("day" + i)
                     .pass(false)
