@@ -6,13 +6,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.DayActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.WordListActivity;
 import lombok.Getter;
 import lombok.Setter;
 import retrofit2.Call;

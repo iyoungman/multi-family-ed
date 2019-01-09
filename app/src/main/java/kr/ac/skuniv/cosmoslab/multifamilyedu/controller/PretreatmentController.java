@@ -265,7 +265,10 @@ public class PretreatmentController {
 
         if(recordDataLengDiff > originalDataLengDiff)
             whoIsBigger = false;
-
+        if(originalDataLengDiff - recordDataLengDiff == 0){
+            mOriginalModel.setWaveData(originalModel.getWaveData());
+            mRecordModel.setWaveData(recordModel.getWaveData());
+        }
         if(whoIsBigger){
             int lengDiff = originalDataLengDiff - recordDataLengDiff;
             double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;

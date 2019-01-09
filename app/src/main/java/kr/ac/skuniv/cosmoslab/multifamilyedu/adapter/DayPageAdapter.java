@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.WordListActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SelectModeActivity;
 
 /**
  * Created by chunso on 2019-01-02.
@@ -56,10 +59,10 @@ public class DayPageAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, final ViewGroup parent) {
         final Context context = parent.getContext();
 
-        // "listview_item" Layout을 inflate하여 convertView 참조 획득.
+        // "listview_day" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.listview_item, parent, false);
+            convertView = inflater.inflate(R.layout.listview_day, parent, false);
         }
         Button button = convertView.findViewById(R.id.dayBtn);
 
@@ -80,9 +83,13 @@ public class DayPageAdapter extends BaseAdapter {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, WordListActivity.class);
+                DayStatusController dayStatusController = new DayStatusController(parent.getContext());
+                WordInfoDto wordInfoDto = dayStatusController.getWordListByUserid(wordPassModel.getDay(), userId);
+
+                Intent intent = new Intent(context, SelectModeActivity.class);
                 intent.putExtra("user_id", userId);
                 intent.putExtra("day", wordPassModel.getDay());
+                intent.putExtra("word_info", wordInfoDto);
                 parent.getContext().startActivity(intent);
             }
         });
