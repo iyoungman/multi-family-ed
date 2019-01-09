@@ -164,7 +164,7 @@ public class AnalysisWaveFormController {
         int sign = 1,index=-1;
 
         //1차적으로 1차 미분값이 부호가 변하는 체크포인트
-        for (int i = 0; i < firstSlopeValue.length; i++) {
+        for (int i = 5; i < firstSlopeValue.length-5; i++) {
             if (firstSlopeValue[i] >= 0 && sign < 0) {
                 checkPoints.add(i);
                 sign = 1; index++;
@@ -181,7 +181,7 @@ public class AnalysisWaveFormController {
 
         sign = 1;
         int k =0;
-        for (int i = 0; i < secondSlopeValue.length; i++) {
+        for (int i = 5; i < secondSlopeValue.length-5; i++) {
             if (secondSlopeValue[i] > 0 && sign < 0) {
                 temp.add(i);
                 sign = 1;

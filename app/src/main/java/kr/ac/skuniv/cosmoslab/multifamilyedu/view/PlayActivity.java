@@ -33,6 +33,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
@@ -42,9 +45,11 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
@@ -59,20 +64,25 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     ImageView imageView;
     Button playBtn, recordBtn, recordPlayBtn, submitBtn;
 
-    String mWord, mRecordPath, mOriginalPath, mPCMPath, mImagePath;
+    String mTag, mWord, mRecordPath, mOriginalPath, mPCMPath, mImagePath;
 
-    String mUserName;
-    int mHighestScore, mPreScore;
+    private String mUserId;
+    private String mDay;
+    int mHighestScore, mPreScore, mIndex = 0;
 
+    List<String> mPassWords = new ArrayList<>();
+    List<String> mFailWords = new ArrayList<>();
     boolean isRecording = false;
     boolean isPlaying = false;
 
+    boolean passAllWord = false;
     public AudioRecord mAudioRecord = null;
     public AudioTrack mAudioTrack = null;
     private int mAudioSource = MediaRecorder.AudioSource.MIC;
     private int mSampleRate = 44100;
     private int mChannelCount = AudioFormat.CHANNEL_IN_STEREO;
     private int mAudioFormat = ENCODING_PCM_16BIT;
+
     private int mBufferSize = AudioTrack.getMinBufferSize(mSampleRate, mChannelCount, mAudioFormat);
 
     DecodeWaveFileController decodeWaveFileController = new DecodeWaveFileController();
@@ -81,25 +91,35 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     FileController fileController;
     DrawWaveFormController originalDisplayView;
     DrawWaveFormController recordDisplayView;
+    WordInfoDto mWordInfoDto;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-//        sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
         userController = new UserController(getApplicationContext());
         fileController = new FileController(getApplicationContext());
 
         Intent intent = getIntent();
-//        mUserName = intent.getStringExtra("name");
+        mTag = intent.getStringExtra("tag");
+        mUserId = intent.getStringExtra("user_id");
+        mDay = intent.getStringExtra("day");
+        mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
+
+        if(mTag.equals("status"))
+            mWord = intent.getStringExtra("word");
+        else {
+            mFailWords = findFailWords();
+            mWord = mFailWords.get(mIndex);
+            mIndex++;
+        }
+        setEnvironment(mWord);
 
         highestScoreTV = findViewById(R.id.highestScoreTV);
         preScoreTV = findViewById(R.id.preScore);
         textView = findViewById(R.id.wordTV);
-
-        mWord = intent.getStringExtra("word");
-        setEnvironment(mWord);
 
         imageView = findViewById(R.id.displayView);
         imageView.setImageBitmap(drawOriginalWaveForm());
@@ -146,6 +166,17 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     }
 
     @Override
+    public void onBackPressed() {
+        mWordInfoDto.setWordpassinfo(syncData(mPassWords));
+
+        Intent intent = new Intent();
+        intent.putExtra("word_info", mWordInfoDto);
+        setResult(RESULT_OK, intent);
+
+        finish();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1111 && resultCode == 2222) {
@@ -166,7 +197,123 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     @Override
     public void onNext(String complete, int score) {
         saveScore(score);
+        if(score < PASS_SCORE)
+            mFailWords.add(mFailWords.get(mIndex));
+
+        if(mIndex < mFailWords.size()) {
+            mWord = mFailWords.get(mIndex);
+            setEnvironment(mWord);
+        }
+        else
+            Toast.makeText(getApplicationContext(), "모든 단어를 합격하셨습니다.", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void startStatusActivity(int score) {
+        saveScore(score);
+        mWordInfoDto.setWordpassinfo(syncData(mPassWords));
+
+        if(mTag.equals("status")) {
+            Intent intent = new Intent();
+            intent.putExtra("word_info", mWordInfoDto);
+            setResult(RESULT_OK, intent);
+        }else if(mTag.equals("select")){
+            Intent intent = new Intent(this, DayStatusActivity.class);
+            intent.putExtra("tag", "play");
+            intent.putExtra("user_id", mUserId);
+            intent.putExtra("day", mDay);
+            intent.putExtra("word_info", mWordInfoDto);
+            startActivity(intent);
+        }
         finish();
+    }
+
+    private List<String> findFailWords() {
+        List<String> wordList = mWordInfoDto.getWordlist();
+        Map<String, String> map = mWordInfoDto.getWordpassinfo();
+        List<String> failWords = new ArrayList<>();
+
+        for(int i = 0 ; i< wordList.size() ; i++){
+            if(map.get(wordList.get(i)).equals("불합격")) {
+                failWords.add(wordList.get(i));
+            }
+        }
+        if( failWords.size() == 0)
+            failWords = wordList;
+
+        Random random = new Random();
+        int leng = failWords.size();
+        int[] indexArr = new int[leng];
+        for(int i = 0 ; i<leng ; i++){
+            indexArr[i] = random.nextInt(leng);
+            for(int j = 0; j<i ; j++) {
+                if(indexArr[i] == indexArr[j]) {
+                    i--;
+                }
+            }
+        }
+
+        List<String> renewalFailWords = new ArrayList<>();
+        for(int i = 0; i< leng ; i++)
+            renewalFailWords.add(failWords.get(indexArr[i]));
+
+
+        return renewalFailWords;
+    }
+
+    public void onRecord(View view) {
+        if (isRecording) {
+            isRecording = false;
+            Toast.makeText(this, "녹음이 중지됩니다...", Toast.LENGTH_SHORT).show();
+            recordBtn.setText("녹음");
+            decodeWaveFileController.pcmToWav(mPCMPath, mRecordPath);
+        } else {
+            isRecording = true;
+            recordBtn.setText("녹음중");
+            //recordDisplayView.clearWaveData();
+            Toast.makeText(this, "녹음이 시작됩니다...", Toast.LENGTH_SHORT).show();
+
+            if (mAudioRecord == null) {
+                mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
+                mAudioRecord.startRecording();
+            }
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    byte[] readData = new byte[mBufferSize];
+                    FileOutputStream fos = null;
+                    try {
+                        fos = new FileOutputStream(mPCMPath);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    while (isRecording) {
+                        int ret = mAudioRecord.read(readData, 0, mBufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
+                        //int bufferSize = ret;
+                        recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
+                        //addValue(len);///////////////////////
+
+                        //저장
+                        try {
+                            fos.write(readData, 0, mBufferSize);    //  읽어온 readData 를 파일에 write 함
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    mAudioRecord.stop();
+                    mAudioRecord.release();
+                    mAudioRecord = null;
+
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
     }
 
     public void onPlay(View view, final String path) {
@@ -305,23 +452,15 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     }
 
     public void setEnvironment(String word) {
-        if (!fileController.confirmFile(word + ".wav")) {
-            Toast.makeText(getApplicationContext(), "파일 없으므로 다운로드", Toast.LENGTH_SHORT).show();
-            fileController.downloadFileByFileName(word + ".wav");
-        }
-
         mOriginalPath = FILE_PATH + "/ORIGINAL/" + mWord + ".wav";
         mRecordPath = FILE_PATH + "/RECORD/" + mWord + ".wav";
         mPCMPath = FILE_PATH + "/RECORD/" + mWord + ".pcm";
         mImagePath = FILE_PATH + "/IMAGE/" + mWord + ".png";
-        textView.setText(mWord);////
-        preScoreTV.setText("0");////
+        textView.setText(mWord);
+        preScoreTV.setText("0");
 
-
-
-        /**/
-//        mHighestScore = sharedPreferences.getInt(mWord, 0);
-//        highestScoreTV.setText(String.valueOf(mHighestScore));
+        mHighestScore = sharedPreferences.getInt(mWord, 0);
+        highestScoreTV.setText(String.valueOf(mHighestScore));
 
         /*File imgFile = new File(mImagePath);
         if(imgFile.exists()){
@@ -329,75 +468,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             imageView.setImageBitmap(myBitmap);
         }*/
     }
-
-
-    public void onRecord(View view) {
-        if (isRecording) {
-            isRecording = false;
-            Toast.makeText(this, "녹음이 중지됩니다...", Toast.LENGTH_SHORT).show();
-            recordBtn.setText("녹음");
-            decodeWaveFileController.pcmToWav(mPCMPath, mRecordPath);
-        } else {
-            isRecording = true;
-            recordBtn.setText("녹음중");
-            recordDisplayView.clearWaveData();///////////
-            Toast.makeText(this, "녹음이 시작됩니다...", Toast.LENGTH_SHORT).show();
-
-            if (mAudioRecord == null) {
-                mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
-                mAudioRecord.startRecording();
-            }
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] readData = new byte[mBufferSize];
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(mPCMPath);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    while (isRecording) {
-                        int ret = mAudioRecord.read(readData, 0, mBufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
-                        //int bufferSize = ret;
-
-                        recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
-                        //addValue(len);///////////////////////
-
-                        //저장
-                        try {
-                            fos.write(readData, 0, mBufferSize);    //  읽어온 readData 를 파일에 write 함
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    mAudioRecord.stop();
-                    mAudioRecord.release();
-                    mAudioRecord = null;
-
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        }
-    }
-
-      /*//원본 그래프
-        LinearLayout originalDisplayLayout = (LinearLayout) findViewById(R.id.originalDisplayView);
-        originalDisplayView = new DrawWaveFormController(getApplicationContext(), true);
-        originalDisplayLayout.addView(originalDisplayView);
-        originalDisplayView.setOriginalWaveDisplay(mOriginalPath);
-
-        //실시간 그래프
-        LinearLayout recordDisplayLayout = (LinearLayout) findViewById(R.id.recordDisplayView);
-        recordDisplayView = new DrawWaveFormController(getApplicationContext(), false);
-        recordDisplayLayout.addView(recordDisplayView);*/
-
 
     /*public String changeWord() {
         Random random = new Random();
@@ -430,8 +500,20 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             System.out.println("값이 없어서 저장됨");
         }
 
+        if(mHighestScore > PASS_SCORE && mWordInfoDto.getWordpassinfo().get(mWord).equals("불합격")){
+            PlayController playController = new PlayController(getApplicationContext());
+            mPassWords.add(playController.setWordPassInfo(mUserId, mWord));
+        }
+
         System.out.println("점수: " + score);
         System.out.println(sharedPreferences.getInt(mWord, 0));
+    }
+
+    public Map<String, String> syncData(List<String> passWord){
+        Map<String, String> map = mWordInfoDto.getWordpassinfo();
+        for(int i = 0 ; i< passWord.size() ; i++)
+            map.put(passWord.get(i), "합격");
+        return map;
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

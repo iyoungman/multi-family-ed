@@ -2,7 +2,6 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.network;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 
 /**

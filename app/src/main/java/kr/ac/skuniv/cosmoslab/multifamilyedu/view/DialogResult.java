@@ -13,20 +13,14 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Map;
-
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.WordInfoController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 /**
@@ -39,12 +33,13 @@ public class DialogResult extends DialogFragment {
     String mRecordPath;
     String mWord;
     int mFinalScore;
-    WordInfoController wordInfoController;
 
     public interface OnCompleteListener {
         void onReplay(int score);
 
         void onNext(String complete, int score);
+
+        void startStatusActivity(int score);
     }
 
     private OnCompleteListener mCallback;
@@ -72,16 +67,20 @@ public class DialogResult extends DialogFragment {
 
         final Button replayBtn = view.findViewById(R.id.replayBtn);
         final Button selectWordBtn = view.findViewById(R.id.select_word);
-        final ImageView imageView = view.findViewById(R.id.waveformImg);
+        final Button statusBtn = view.findViewById(R.id.start_status_activity_button);
+//        final ImageView imageView = view.findViewById(R.id.waveformImg);
         final TextView scoreTV = view.findViewById(R.id.scoreTV);
-        wordInfoController = new WordInfoController(getActivity().getApplicationContext());
-        imageView.setImageBitmap(onDraw());
+        final TextView passTV = view.findViewById(R.id.passTV);
+//        imageView.setImageBitmap(onDraw());
+        onDraw();
         scoreTV.setText(mFinalScore + "점");
-
-        if(mFinalScore >= 80) {
-            Toast.makeText(getActivity().getApplicationContext(), "합격입니다", Toast.LENGTH_LONG).show();
-            Map<String,String> setWordPassInfo = wordInfoController.setWordPassInfo("testid", mWord);
-            //단어목록 으로 넘겨줘서 리스트뷰 갱신
+        if(mFinalScore > 80) {
+            passTV.setText("합격");
+            passTV.setTextColor(Color.BLUE);
+        }
+        else {
+            passTV.setText("불합격");
+            passTV.setTextColor(Color.RED);
         }
 
         System.out.println("점수: " + mFinalScore);
@@ -98,6 +97,14 @@ public class DialogResult extends DialogFragment {
             public void onClick(View v) {
                 dismiss();
                 mCallback.onNext("next", mFinalScore);
+            }
+        });
+
+        statusBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                mCallback.startStatusActivity(mFinalScore);
             }
         });
 
@@ -140,12 +147,10 @@ public class DialogResult extends DialogFragment {
         recodeWaveform.setColor(Color.RED);
         recodeWaveform.setAlpha(60);
 
-        for (int i = 0; i < originalArray.length; i++) {
+        for (int i = 0; i < originalArray.length; i++)
             originalCanvas.drawLine(i, bitmapY - originalArray[i], i, bitmapY, originalWaveform);
-        }
-        for (int i = 0; i < recordArray.length; i++) {
+        for (int i = 0; i < recordArray.length; i++)
             recodeCanvas.drawLine(i, bitmapY - recordArray[i], i, bitmapY, recodeWaveform);
-        }
         return waveForm;
     }
 

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,13 +14,18 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.DayPageAdapter;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
+import lombok.Getter;
 
 /**
  * Created by chunso on 2019-01-02.
  */
 
 public class DayActivity extends AppCompatActivity {
-    private UserController userController;
+    final int PASS_NEXT_DAY_COUNT = 7;
+
+    private String mDay;
+    private String mUserId;
+    private String mUserPw;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,24 +33,13 @@ public class DayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_day_select);
         Intent intent = getIntent();
         UserModel userModel = (UserModel)intent.getSerializableExtra("login_model");
-        userController = new UserController(getApplicationContext());
         ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
+
         if(userModel != null){
-            int userLevel = Integer.parseInt(userModel.getLevel());
-            for(int i =1 ;i<= userLevel ; i++){
-                WordPassModel listViewItem = WordPassModel.builder()
-                        .day("day" + i)
-                        .pass(true)
-                        .build();
-                wordPassModels.add(listViewItem);
-            }
-            for(int i =userLevel+1 ;i<= 17 ; i++){
-                WordPassModel listViewItem = WordPassModel.builder()
-                        .day("day" + i)
-                        .pass(false)
-                        .build();
-                wordPassModels.add(listViewItem);
-            }
+            mUserId = userModel.getId();
+            mUserPw = userModel.getPw();
+            mDay = userModel.getLevel();
+            wordPassModels = setEnviroment(Integer.parseInt(userModel.getLevel()));
         }else {
             Toast.makeText(getApplicationContext(), "인터넷 연결이 안되었습니다.", Toast.LENGTH_LONG).show();
         }
@@ -58,18 +50,43 @@ public class DayActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        UserController userController = new UserController(getApplicationContext());
+        userController.signinUser(mUserId, mUserPw);
+        UserModel userModel = userController.getUserModel();
+        String day;
+        if(userModel != null) {
+            day = userModel.getLevel();
+            ArrayList<WordPassModel> wordPassModels = setEnviroment(Integer.parseInt(day));
+            ListView listView = findViewById(R.id.listView);
+            DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId());
+
+            listView.setAdapter(adapter);
+        }else{
+            Toast.makeText(getApplicationContext(), "유저 정보를 가져오는데 실패했습니다.", Toast.LENGTH_LONG);
+        }
+
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_signout:
-                userController.signoutUser();
-                finish();
+    public ArrayList<WordPassModel> setEnviroment(int userDay){
+        ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
+
+        for(int i =1 ;i<= userDay ; i++){
+            WordPassModel listViewItem = WordPassModel.builder()
+                    .day("day" + i)
+                    .pass(true)
+                    .build();
+            wordPassModels.add(listViewItem);
         }
-        return super.onOptionsItemSelected(item);
+        for(int i =userDay+1 ;i<= 17 ; i++){
+            WordPassModel listViewItem = WordPassModel.builder()
+                    .day("day" + i)
+                    .pass(false)
+                    .build();
+            wordPassModels.add(listViewItem);
+        }
+        return wordPassModels;
     }
 }

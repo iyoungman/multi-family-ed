@@ -18,13 +18,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.SigninActivity">
+        <activity android:name=".view.SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.SigninActivity"/>
         <activity
             android:name=".view.SignupActivity"
             android:label="@string/signup_name" />
@@ -32,8 +34,9 @@
             android:name=".view.PlayActivity"
             android:label="@string/play_name" />
         <activity android:name=".view.DayActivity" />
-        <activity android:name=".view.WordListActivity" />
         <activity android:name=".view.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".view.DayStatusActivity"/>
+        <activity android:name=".view.SelectModeActivity"/>
     </application>
 
 </manifest>

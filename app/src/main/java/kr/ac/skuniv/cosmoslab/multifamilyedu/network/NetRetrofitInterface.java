@@ -3,7 +3,6 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.network;
 
 import java.util.Map;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import okhttp3.ResponseBody;
