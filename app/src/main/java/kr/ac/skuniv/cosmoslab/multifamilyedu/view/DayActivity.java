@@ -30,6 +30,7 @@ public class DayActivity extends AppCompatActivity {
     private String mDay;
     private String mUserId;
     private String mUserPw;
+    private UserController userController;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class DayActivity extends AppCompatActivity {
         Intent intent = getIntent();
         UserModel userModel = (UserModel)intent.getSerializableExtra("login_model");
         ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
+        userController = new UserController(getApplicationContext());
 
         if(userModel != null){
             mUserId = userModel.getId();
@@ -80,9 +82,11 @@ public class DayActivity extends AppCompatActivity {
             int nowDay = Integer.parseInt(mDay);
             int reciveDay = Integer.parseInt(data.getStringExtra("day"));
             if(reciveDay == nowDay && data.getStringExtra("pass").equals("합격")){
-                /**
-                 * 서버와 통신하는 부분
-                 */
+                userController.convertToNextDayByUser(mUserId, String.valueOf(reciveDay));
+                if(!userController.getResponse()) {
+                    Toast.makeText(getApplicationContext(), "정보 송신에 실패하였습니다", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 ArrayList<WordPassModel> wordPassModels = setEnviroment(++reciveDay);
                 DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext());
                 ListView listview = findViewById(R.id.listView);

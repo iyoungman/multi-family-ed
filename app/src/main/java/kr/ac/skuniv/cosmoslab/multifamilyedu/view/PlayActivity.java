@@ -30,22 +30,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.PassCount;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
@@ -204,6 +200,8 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         else
             Toast.makeText(getApplicationContext(), "모든 단어를 합격하셨습니다.", Toast.LENGTH_LONG).show();
+
+        imageView.setImageBitmap(onDrawOriginalWaveForm());
     }
 
     @Override
