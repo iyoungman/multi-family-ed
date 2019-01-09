@@ -8,10 +8,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.DayPageAdapter;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.WordPageAdapter;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
 import lombok.Getter;
@@ -39,18 +43,18 @@ public class DayActivity extends AppCompatActivity {
             mUserId = userModel.getId();
             mUserPw = userModel.getPw();
             mDay = userModel.getLevel();
-            wordPassModels = setEnviroment(Integer.parseInt(userModel.getLevel()));
+            wordPassModels = setEnviroment(Integer.parseInt(mDay));
         }else {
             Toast.makeText(getApplicationContext(), "인터넷 연결이 안되었습니다.", Toast.LENGTH_LONG).show();
         }
 
         ListView listView = findViewById(R.id.listView);
-        DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId());
+        DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId(), getApplicationContext());
 
         listView.setAdapter(adapter);
     }
 
-    @Override
+/*    @Override
     protected void onStart() {
         super.onStart();
         UserController userController = new UserController(getApplicationContext());
@@ -61,13 +65,30 @@ public class DayActivity extends AppCompatActivity {
             day = userModel.getLevel();
             ArrayList<WordPassModel> wordPassModels = setEnviroment(Integer.parseInt(day));
             ListView listView = findViewById(R.id.listView);
-            DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId());
+            DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId(), getApplicationContext());
 
             listView.setAdapter(adapter);
         }else{
             Toast.makeText(getApplicationContext(), "유저 정보를 가져오는데 실패했습니다.", Toast.LENGTH_LONG);
         }
 
+    }*/
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            int nowDay = Integer.parseInt(mDay);
+            int reciveDay = Integer.parseInt(data.getStringExtra("day"));
+            if(reciveDay == nowDay && data.getStringExtra("pass").equals("합격")){
+                /**
+                 * 서버와 통신하는 부분
+                 */
+                ArrayList<WordPassModel> wordPassModels = setEnviroment(++reciveDay);
+                DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext());
+                ListView listview = findViewById(R.id.listView);
+                listview.setAdapter(adapter);
+            }
+        }
     }
 
     public ArrayList<WordPassModel> setEnviroment(int userDay){

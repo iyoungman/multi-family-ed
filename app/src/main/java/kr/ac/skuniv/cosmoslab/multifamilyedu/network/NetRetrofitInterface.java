@@ -46,4 +46,5 @@ public interface NetRetrofitInterface {
     @GET("wordinfo/userid/{userid}/wordname/{wordname}")
     Call<Map<String,String>> setWordPassInfo(@Path("userid") String userid, @Path("wordname") String wordname);
 
+
 }

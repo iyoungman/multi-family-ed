@@ -23,7 +23,7 @@ public class NetRetrofit {
     }
 
     private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://172.30.1.48:8080/")
+            .baseUrl("http://172.30.1.51:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 

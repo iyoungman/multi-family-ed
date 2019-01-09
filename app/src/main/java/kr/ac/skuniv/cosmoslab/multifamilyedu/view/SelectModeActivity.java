@@ -9,19 +9,24 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
 
 /**
  * Created by chunso on 2019-01-06.
  */
 
 public class SelectModeActivity extends AppCompatActivity {
-    String userId;
-    String day;
-    WordInfoDto wordInfoDto;
+    String mUserId;
+    String mDay;
+    WordInfoDto mWordInfoDto;
 
     Button startBtn;
     Button statusBtn;
@@ -37,20 +42,20 @@ public class SelectModeActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
 
         Intent intent = getIntent();
-        userId = intent.getStringExtra("user_id");
-        day = intent.getStringExtra("day");
-        wordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
+        mUserId = intent.getStringExtra("user_id");
+        mDay = intent.getStringExtra("day");
+        mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
 
-        textView.setText(day);
+        textView.setText(mDay);
 
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
                 intent.putExtra("tag", "select");
-                intent.putExtra("user_id", userId);
-                intent.putExtra("day", day);
-                intent.putExtra("word_info", wordInfoDto);
+                intent.putExtra("user_id", mUserId);
+                intent.putExtra("day", mDay);
+                intent.putExtra("word_info", mWordInfoDto);
                 startActivity(intent);
             }
         });
@@ -60,9 +65,9 @@ public class SelectModeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), DayStatusActivity.class);
                 intent.putExtra("tag", "select");
-                intent.putExtra("user_id", userId);
-                intent.putExtra("day", day);
-                intent.putExtra("word_info", wordInfoDto);
+                intent.putExtra("user_id", mUserId);
+                intent.putExtra("day", mDay);
+                intent.putExtra("word_info", mWordInfoDto);
                 startActivityForResult(intent, 3000);
             }
         });
@@ -71,7 +76,8 @@ public class SelectModeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra("word_info", wordInfoDto);
+        intent.putExtra("day", mDay.substring(3));
+        intent.putExtra("pass", checkPassDay(mWordInfoDto));
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -79,6 +85,24 @@ public class SelectModeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK)
-            wordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
+            mWordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
+    }
+
+    private String checkPassDay(WordInfoDto wordInfoDto){
+        int cnt = 0;
+
+        List<String> wordList = wordInfoDto.getWordlist();
+        Map<String, String> passList = wordInfoDto.getWordpassinfo();
+        for(int i = 0 ; i<wordInfoDto.getWordlist().size() ; i++){
+            if(passList.get(wordList.get(i)).equals("합격")) {
+                cnt++;
+            }
+        }
+
+        if(cnt > wordList.size() * 0.7) {
+            return "합격";
+        }
+        else
+            return "불합격";
     }
 }
