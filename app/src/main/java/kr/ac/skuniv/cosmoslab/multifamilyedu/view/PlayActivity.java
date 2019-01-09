@@ -200,6 +200,8 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         else
             Toast.makeText(getApplicationContext(), "모든 단어를 합격하셨습니다.", Toast.LENGTH_LONG).show();
+
+        imageView.setImageBitmap(onDrawOriginalWaveForm());
     }
 
     @Override

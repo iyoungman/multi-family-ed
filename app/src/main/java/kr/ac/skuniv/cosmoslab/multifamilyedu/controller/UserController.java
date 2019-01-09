@@ -49,6 +49,10 @@ public class UserController {
         return this.userModel;
     }
 
+    public boolean getResponse() {
+        return response;
+    }
+
 
     //로그인 메소드
     public void signinUser(final String userid, final String pw) {
@@ -71,7 +75,7 @@ public class UserController {
         }).start();
 
         try {
-            Thread.sleep(1500 );
+            Thread.sleep(1500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,9 +120,10 @@ public class UserController {
 
     //유저정보를 다음 LEVEL로 변경하는 메소드
     public void convertToNextDayByUser(String userid, String level) {
+        response = false;
         if (Integer.parseInt(level) >= 20) {
             Toast.makeText(context.getApplicationContext(), "모든 DAY에 합격하였습니다", Toast.LENGTH_LONG).show();
-            return;
+            response = false;
         } else {
             int nextLevel = Integer.parseInt(level) + 1;
             level = String.valueOf(nextLevel);
@@ -131,12 +136,12 @@ public class UserController {
                 try {
                     Response<Void> respon = res.execute();
                     if (respon.raw().code() == 200) {
-
+                        response = true;
                     } else {
-
+                        response = false;
                     }
                 } catch (Exception e) {
-
+                    response = false;
                 }
             }
         }).start();
