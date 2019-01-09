@@ -18,7 +18,7 @@ import static java.lang.System.arraycopy;
  */
 
 @Getter
-public class PretreatmentController {
+public class DrawController {
     static final int NOISE_BOUND = 500;
 
     private Context context;
@@ -28,8 +28,31 @@ public class PretreatmentController {
     private int[] mOriginalDrawModel;
     private int[] mRecordDrawModel;
     private int maximumValue;
-    public PretreatmentController(Context context){
+    public DrawController(Context context){
         this.context = context;
+    }
+
+    public void setWaveFile(String filePath) {
+        DecodeWaveFileController decoderWAV = new DecodeWaveFileController();
+
+        try {
+            File waveFile = new File(filePath);
+            decoderWAV.ReadFile(waveFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PretreatmentModel originalModel = new PretreatmentModel();
+        originalModel.setWaveData(decoderWAV.getFrameGains());
+
+        int count = 0;
+        while(count < 10){
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+            count++;
+        }
+
+        originalModel = findStartIndexAndEndIndex(originalModel);
+        mOriginalDrawModel = setDrawableData(originalModel);
     }
 
     public boolean run(String originalFilePath, String recordFilePath) {
@@ -265,10 +288,7 @@ public class PretreatmentController {
 
         if(recordDataLengDiff > originalDataLengDiff)
             whoIsBigger = false;
-        if(originalDataLengDiff - recordDataLengDiff == 0){
-            mOriginalModel.setWaveData(originalModel.getWaveData());
-            mRecordModel.setWaveData(recordModel.getWaveData());
-        }
+
         if(whoIsBigger){
             int lengDiff = originalDataLengDiff - recordDataLengDiff;
             double lengGratio = (double)recordDataLengDiff / (double)originalDataLengDiff;
@@ -367,7 +387,7 @@ public class PretreatmentController {
         return resultData;
     }
 
-    private int findMaximumValueIndex(int[] waveData){
+    public int findMaximumValueIndex(int[] waveData){
         int maximumValueIndex = 0;
         int max = 0;
         for(int i = 0; i < waveData.length ; i++){

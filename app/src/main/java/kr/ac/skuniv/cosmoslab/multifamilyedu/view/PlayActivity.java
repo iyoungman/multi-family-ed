@@ -3,6 +3,10 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -12,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,11 +39,16 @@ import java.util.Map;
 import java.util.Random;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
@@ -48,7 +59,6 @@ import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
 public class PlayActivity extends AppCompatActivity implements DialogResult.OnCompleteListener {
     private final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";
-    private final int PASS_SCORE = 80;
 
     TextView textView, highestScoreTV, preScoreTV;
     ImageView imageView;
@@ -74,6 +84,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     private int mAudioFormat = ENCODING_PCM_16BIT;
 
     private int mBufferSize = AudioTrack.getMinBufferSize(mSampleRate, mChannelCount, mAudioFormat);
+
     DecodeWaveFileController decodeWaveFileController = new DecodeWaveFileController();
     SharedPreferences sharedPreferences;
     UserController userController;
@@ -91,11 +102,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         userController = new UserController(getApplicationContext());
         fileController = new FileController(getApplicationContext());
 
-        highestScoreTV = findViewById(R.id.highestScoreTV);
-        preScoreTV = findViewById(R.id.preScore);
-        textView = findViewById(R.id.wordTV);
-//        imageView = findViewById(R.id.waveformImg);
-
         Intent intent = getIntent();
         mTag = intent.getStringExtra("tag");
         mUserId = intent.getStringExtra("user_id");
@@ -111,16 +117,12 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         setEnvironment(mWord);
 
-        //원본 그래프
-        LinearLayout originalDisplayLayout = (LinearLayout) findViewById(R.id.originalDisplayView);
-        originalDisplayView = new DrawWaveFormController(getApplicationContext(), true);
-        originalDisplayLayout.addView(originalDisplayView);
-        originalDisplayView.setOriginalWaveDisplay(mOriginalPath);
+        highestScoreTV = findViewById(R.id.highestScoreTV);
+        preScoreTV = findViewById(R.id.preScore);
+        textView = findViewById(R.id.wordTV);
 
-        //실시간 그래프
-        LinearLayout recordDisplayLayout = (LinearLayout) findViewById(R.id.recordDisplayView);
-        recordDisplayView = new DrawWaveFormController(getApplicationContext(), false);
-        recordDisplayLayout.addView(recordDisplayView);
+        imageView = findViewById(R.id.displayView);
+        imageView.setImageBitmap(drawOriginalWaveForm());
 
         playBtn = findViewById(R.id.playBtn);
         playBtn.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +136,9 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         recordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRecord(v);
+                Intent intent = new Intent(PlayActivity.this, RecordActivity.class);
+                intent.putExtra("word", mWord);
+                startActivityForResult(intent, 1111);
             }
         });
 
@@ -170,6 +174,14 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         setResult(RESULT_OK, intent);
 
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1111 && resultCode == 2222) {
+            imageView.setImageBitmap(onDraw());
+        }
     }
 
     @Override
@@ -363,6 +375,74 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
     }
 
+    public Bitmap drawOriginalWaveForm() {
+        DrawController drawController = new DrawController(getApplicationContext());
+        drawController.setWaveFile(mOriginalPath);
+        int[] originalArray = drawController.getMOriginalDrawModel();
+        int maximumValue = drawController.findMaximumValueIndex(originalArray);
+
+        int bitmapX = originalArray.length;
+        int bitmapY = originalArray[maximumValue];
+
+        Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
+        Canvas originalCanvas = new Canvas(waveForm);
+
+        Paint originalWaveform = new Paint();
+        originalWaveform.setColor(Color.BLUE);
+        originalWaveform.setAlpha(40);
+
+        for (int i = 0; i < originalArray.length; i++) {
+            originalCanvas.drawLine(i, bitmapY - originalArray[i], i, bitmapY, originalWaveform);
+        }
+
+        return waveForm;
+    }
+
+    public Bitmap onDraw() {
+        PretreatmentController pretreatmentController = new PretreatmentController(getApplicationContext());
+        if (!pretreatmentController.run(mOriginalPath, mRecordPath)) {
+            Toast.makeText(getApplicationContext(), "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            return null;
+        }
+        int[] originalArray = pretreatmentController.getMOriginalDrawModel();
+        int[] recordArray = pretreatmentController.getMRecordDrawModel();
+        int maximumValue = pretreatmentController.getMaximumValue();
+
+        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(getApplicationContext(), pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
+        int mFinalScore = analysisWaveform.getFinalScore();
+
+        if (mFinalScore == 0) {
+            Toast.makeText(getApplicationContext(), "점수를 계산하는데 문제가 발생되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            return null;
+        }
+
+        WaveFormModel originalModel = analysisWaveform.getMOriginalModel();
+        WaveFormModel recordModel = analysisWaveform.getMRecodeModel();
+
+        int bitmapX = originalArray.length > recordArray.length ? originalArray.length : recordArray.length;
+        int bitmapY = maximumValue;
+
+        Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
+        Canvas originalCanvas = new Canvas(waveForm);
+        Canvas recodeCanvas = new Canvas(waveForm);
+
+        Paint originalWaveform = new Paint();
+        originalWaveform.setColor(Color.BLUE);
+        originalWaveform.setAlpha(40);
+
+        Paint recodeWaveform = new Paint();
+        recodeWaveform.setColor(Color.RED);
+        recodeWaveform.setAlpha(60);
+
+        for (int i = 0; i < originalArray.length; i++) {
+            originalCanvas.drawLine(i, bitmapY - originalArray[i], i, bitmapY, originalWaveform);
+        }
+        for (int i = 0; i < recordArray.length; i++) {
+            recodeCanvas.drawLine(i, bitmapY - recordArray[i], i, bitmapY, recodeWaveform);
+        }
+        return waveForm;
+    }
+
     public void showDialogFragment() {
         Bundle args = new Bundle();
         args.putString("word", mWord);
@@ -388,6 +468,20 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             imageView.setImageBitmap(myBitmap);
         }*/
     }
+
+    /*public String changeWord() {
+        Random random = new Random();
+        WaveFileModel[] waveFileModels = WaveFileModel.values();
+        boolean findWord = false;
+        int rand = 0;
+        while (!findWord) {
+            rand = random.nextInt(173);
+            if (sharedPreferences.getInt(waveFileModels[rand].toString(), 0) == 0)
+                findWord = true;
+        }
+        System.out.println("변경된 단어" + waveFileModels[rand].toString());
+        return waveFileModels[rand].toString();
+    }*/
 
     public void saveScore(int score) {
         if (mHighestScore != 0 && score > mHighestScore) {

@@ -51,7 +51,7 @@ public class DialogResult extends DialogFragment {
         try {
             mCallback = (OnCompleteListener) activity;
         } catch (ClassCastException e) {
-            Log.d("DialogFragmentExample", "Activity doesn't implement the OnCompleteListener interface");
+            Log.d("DialogFragmentExample", "Activity doesn'timer implement the OnCompleteListener interface");
         }
     }
 

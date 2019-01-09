@@ -23,7 +23,7 @@ import lombok.Getter;
 /**
  * Created by chunso on 2019-01-02.
  */
-@Getter
+
 public class DayActivity extends AppCompatActivity {
     final int PASS_NEXT_DAY_COUNT = 7;
 

@@ -37,17 +37,17 @@ public class UserController {
         this.context = context;
     }
 
-/*    public UserController(UserModel userModel, Context context) {
+    public UserController(UserModel userModel, Context context) {
         this.userModel = userModel;
         this.context = context;
-    }*/
+    }
 
     public UserModel getUserModel() {
         return this.userModel;
     }
 
     //로그인 메소드
-    public void signinUser(final String userid, final String pw) {
+    public void  signinUser(final String userid, final String pw) {
         final Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
         new Thread(new Runnable() {
             @Override
@@ -55,7 +55,7 @@ public class UserController {
                 try {
                     userModel = res.execute().body();
                 } catch (Exception e) {
-
+                    Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
                 }
             }
         }).start();
@@ -82,7 +82,6 @@ public class UserController {
                     Toast.makeText(context.getApplicationContext(), "아이디 중복", Toast.LENGTH_LONG).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.i(TAG + "실패", t.getMessage());
@@ -102,6 +101,35 @@ public class UserController {
         Intent intent = new Intent(context, SigninActivity.class);
         context.startActivity(intent);
         Toast.makeText(context.getApplicationContext(), "로그아웃", Toast.LENGTH_LONG).show();
+    }
+
+    //유저정보를 다음 LEVEL로 변경하는 메소드
+    public void convertToNextDayByUser(String userid, String level) {
+        if(Integer.parseInt(level) > 16) {
+            Toast.makeText(context.getApplicationContext(), "모든 DAY에 합격하였습니다", Toast.LENGTH_LONG).show();
+            return;
+        } else {
+            int nextLevel = Integer.parseInt(level) + 1;
+            level = String.valueOf(nextLevel);
+        }
+
+        final Call<Void> res = NetRetrofit.getInstance().getNetRetrofitInterface().convertToNextDay(userid, String.valueOf(level));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                } catch (Exception e) {
+                    Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
