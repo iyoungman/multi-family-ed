@@ -3,6 +3,8 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ public class UserController {
     Context context;
     SharedPreferences auto;
     SharedPreferences.Editor editor;
+    private boolean response;
 
     public UserController(Context context) {
         this.context = context;
@@ -46,25 +49,33 @@ public class UserController {
         return this.userModel;
     }
 
+
     //로그인 메소드
-    public void  signinUser(final String userid, final String pw) {
+    public void signinUser(final String userid, final String pw) {
+        response = false;
         final Call<UserModel> res = NetRetrofit.getInstance().getNetRetrofitInterface().signin(userid, pw);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    userModel = res.execute().body();
+                    Response<UserModel> respon = res.execute();
+                    if (respon.raw().code() == 200) {
+                        userModel = respon.body();
+                    } else {
+                        userModel = null;
+                    }
                 } catch (Exception e) {
-                    Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "실패");
                 }
             }
         }).start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500 );
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     //회원가입 메소드
@@ -77,11 +88,11 @@ public class UserController {
                     Toast.makeText(context.getApplicationContext(), "회원가입 성공", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(context, SigninActivity.class);
                     context.startActivity(intent);
-                    //finish
                 } else {
                     Toast.makeText(context.getApplicationContext(), "아이디 중복", Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.i(TAG + "실패", t.getMessage());
@@ -105,7 +116,7 @@ public class UserController {
 
     //유저정보를 다음 LEVEL로 변경하는 메소드
     public void convertToNextDayByUser(String userid, String level) {
-        if(Integer.parseInt(level) > 16) {
+        if (Integer.parseInt(level) >= 20) {
             Toast.makeText(context.getApplicationContext(), "모든 DAY에 합격하였습니다", Toast.LENGTH_LONG).show();
             return;
         } else {
@@ -118,15 +129,20 @@ public class UserController {
             @Override
             public void run() {
                 try {
+                    Response<Void> respon = res.execute();
+                    if (respon.raw().code() == 200) {
 
+                    } else {
+
+                    }
                 } catch (Exception e) {
-                    Toast.makeText(context.getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
+
                 }
             }
         }).start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -16,40 +16,38 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.PassCount;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
@@ -59,6 +57,7 @@ import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
 public class PlayActivity extends AppCompatActivity implements DialogResult.OnCompleteListener {
     private final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";
+    private final int PASS_SCORE = 80;
 
     TextView textView, highestScoreTV, preScoreTV;
     ImageView imageView;
@@ -68,7 +67,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
     private String mUserId;
     private String mDay;
-    int mHighestScore, mPreScore, mIndex = 0;
+    int mHighestScore, mPreScore, mIndex, mFinalScore = 0;
 
     List<String> mPassWords = new ArrayList<>();
     List<String> mFailWords = new ArrayList<>();
@@ -102,6 +101,11 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         userController = new UserController(getApplicationContext());
         fileController = new FileController(getApplicationContext());
 
+        highestScoreTV = findViewById(R.id.highestScoreTV);
+        preScoreTV = findViewById(R.id.preScore);
+        textView = findViewById(R.id.wordTV);
+        imageView = findViewById(R.id.displayView);
+
         Intent intent = getIntent();
         mTag = intent.getStringExtra("tag");
         mUserId = intent.getStringExtra("user_id");
@@ -117,12 +121,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         setEnvironment(mWord);
 
-        highestScoreTV = findViewById(R.id.highestScoreTV);
-        preScoreTV = findViewById(R.id.preScore);
-        textView = findViewById(R.id.wordTV);
-
-        imageView = findViewById(R.id.displayView);
-        imageView.setImageBitmap(drawOriginalWaveForm());
+        imageView.setImageBitmap(onDrawOriginalWaveForm());
 
         playBtn = findViewById(R.id.playBtn);
         playBtn.setOnClickListener(new View.OnClickListener() {
@@ -159,7 +158,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
                     Toast.makeText(getApplicationContext(), "녹음부터 하시기바랍니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     showDialogFragment();
-                    recordDisplayView.clearWaveData();
                 }
             }
         });
@@ -261,61 +259,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         return renewalFailWords;
     }
 
-    public void onRecord(View view) {
-        if (isRecording) {
-            isRecording = false;
-            Toast.makeText(this, "녹음이 중지됩니다...", Toast.LENGTH_SHORT).show();
-            recordBtn.setText("녹음");
-            decodeWaveFileController.pcmToWav(mPCMPath, mRecordPath);
-        } else {
-            isRecording = true;
-            recordBtn.setText("녹음중");
-            //recordDisplayView.clearWaveData();
-            Toast.makeText(this, "녹음이 시작됩니다...", Toast.LENGTH_SHORT).show();
-
-            if (mAudioRecord == null) {
-                mAudioRecord = new AudioRecord(mAudioSource, mSampleRate, mChannelCount, mAudioFormat, mBufferSize);
-                mAudioRecord.startRecording();
-            }
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] readData = new byte[mBufferSize];
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(mPCMPath);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    while (isRecording) {
-                        int ret = mAudioRecord.read(readData, 0, mBufferSize);  //  AudioRecord의 read 함수를 통해 pcm data 를 읽어옴
-                        //int bufferSize = ret;
-                        recordDisplayView.addWaveData(readData, 0, ret);///////////////////////////////
-                        //addValue(len);///////////////////////
-
-                        //저장
-                        try {
-                            fos.write(readData, 0, mBufferSize);    //  읽어온 readData 를 파일에 write 함
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    mAudioRecord.stop();
-                    mAudioRecord.release();
-                    mAudioRecord = null;
-
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        }
-    }
-
     public void onPlay(View view, final String path) {
         if (isPlaying) {
             isPlaying = false;
@@ -375,14 +318,14 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
     }
 
-    public Bitmap drawOriginalWaveForm() {
-        DrawController drawController = new DrawController(getApplicationContext());
-        drawController.setWaveFile(mOriginalPath);
-        int[] originalArray = drawController.getMOriginalDrawModel();
-        int maximumValue = drawController.findMaximumValueIndex(originalArray);
+    public Bitmap onDrawOriginalWaveForm() {
+        PretreatmentController pretreatmentController = new PretreatmentController(getApplicationContext());
+        pretreatmentController.setWaveFile(mOriginalPath);
+        int[] originalArray = pretreatmentController.getMOriginalDrawModel();
+        int maximumValue = pretreatmentController.getWaveMaximumValue(originalArray);
 
         int bitmapX = originalArray.length;
-        int bitmapY = originalArray[maximumValue];
+        int bitmapY = maximumValue;
 
         Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
         Canvas originalCanvas = new Canvas(waveForm);
@@ -409,10 +352,10 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         int maximumValue = pretreatmentController.getMaximumValue();
 
         AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(getApplicationContext(), pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
-        int mFinalScore = analysisWaveform.getFinalScore();
+        mFinalScore = analysisWaveform.getFinalScore();
 
         if (mFinalScore == 0) {
-            Toast.makeText(getApplicationContext(), "점수를 계산하는데 문제가 발생되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "점수를 계산하는데 문제가 발생되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -446,12 +389,18 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     public void showDialogFragment() {
         Bundle args = new Bundle();
         args.putString("word", mWord);
+        args.putInt("finalScore", mFinalScore);
         DialogFragment newFragment = new DialogResult();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "dialog");
     }
 
     public void setEnvironment(String word) {
+        if (!fileController.confirmFile(word + ".wav")) {
+            Toast.makeText(getApplicationContext(), "파일 없으므로 다운로드", Toast.LENGTH_SHORT).show();
+            fileController.downloadFileByFileName(word + ".wav");
+        }
+
         mOriginalPath = FILE_PATH + "/ORIGINAL/" + mWord + ".wav";
         mRecordPath = FILE_PATH + "/RECORD/" + mWord + ".wav";
         mPCMPath = FILE_PATH + "/RECORD/" + mWord + ".pcm";
@@ -461,12 +410,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
 
         mHighestScore = sharedPreferences.getInt(mWord, 0);
         highestScoreTV.setText(String.valueOf(mHighestScore));
-
-        /*File imgFile = new File(mImagePath);
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(myBitmap);
-        }*/
     }
 
     /*public String changeWord() {

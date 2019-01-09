@@ -40,10 +40,6 @@ public class PlayController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
         return wordName;
     }
 }

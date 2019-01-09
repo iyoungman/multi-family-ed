@@ -32,6 +32,33 @@ public class PretreatmentController {
         this.context = context;
     }
 
+    public int getWaveMaximumValue(int[] waveData) {
+        return waveData[findMaximumValueIndex(waveData)];
+    }
+
+    public void setWaveFile(String filePath) {
+        DecodeWaveFileController decoderWAV = new DecodeWaveFileController();
+
+        try {
+            File waveFile = new File(filePath);
+            decoderWAV.ReadFile(waveFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PretreatmentModel originalModel = new PretreatmentModel();
+        originalModel.setWaveData(decoderWAV.getFrameGains());
+
+        int count = 0;
+        while(count < 10){
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+            count++;
+        }
+
+        originalModel = findStartIndexAndEndIndex(originalModel);
+        mOriginalDrawModel = setDrawableData(originalModel);
+    }
+
     public boolean run(String originalFilePath, String recordFilePath) {
         DecodeWaveFileController decoderOriginalWAV = new DecodeWaveFileController();
         DecodeWaveFileController decoderRecodeWAV = new DecodeWaveFileController();

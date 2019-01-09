@@ -68,12 +68,12 @@ public class SigninActivity extends AppCompatActivity {
 
         if (autoId != null) {
             userController.signinUser(autoId, autoPw);
-            if(userController.getUserModel() != null) {
+            if (userController.getUserModel() != null) {
                 Intent intent = new Intent(getApplicationContext(), DayActivity.class);
                 intent.putExtra("login_model", userController.getUserModel());
                 startActivity(intent);
                 finish();
-            }else{
+            } else {
                 Toast.makeText(getApplicationContext(), "자동로그인이 실패했습니다. 다시 로그인해 주세요..", Toast.LENGTH_LONG).show();
                 idEditText.setText(autoId);
                 pwEditText.setText("");
@@ -84,11 +84,16 @@ public class SigninActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userController.signinUser(idEditText.getText().toString(), pwEditText.getText().toString());
+                if (userController.getUserModel().equals(null)) {
+                    Toast.makeText(getApplicationContext(), "로그인이 실패했습니다. 다시 로그인해 주세요..", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 Intent intent = new Intent(getApplicationContext(), DayActivity.class);
                 intent.putExtra("login_model", userController.getUserModel());
-                 startActivity(intent);
+                startActivity(intent);
+
                 try {
-                    if(autoSigninCheckBox.isChecked()) {
+                    if (autoSigninCheckBox.isChecked()) {
                         editor.putString("autoId", idEditText.getText().toString());
                         editor.putString("autoPw", pwEditText.getText().toString());
                         editor.putBoolean("autoLogin", true);
