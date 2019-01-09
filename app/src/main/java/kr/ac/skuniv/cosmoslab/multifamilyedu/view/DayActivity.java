@@ -87,6 +87,7 @@ public class DayActivity extends AppCompatActivity {
                 DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext());
                 ListView listview = findViewById(R.id.listView);
                 listview.setAdapter(adapter);
+                mDay = String.valueOf(reciveDay);
             }
         }
     }

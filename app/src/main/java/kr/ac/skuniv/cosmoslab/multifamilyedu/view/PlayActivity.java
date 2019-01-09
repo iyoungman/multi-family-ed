@@ -30,22 +30,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.PassCount;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
@@ -112,13 +108,12 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         mDay = intent.getStringExtra("day");
         mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
 
+        mFailWords = findFailWords();
         if(mTag.equals("status"))
             mWord = intent.getStringExtra("word");
-        else {
-            mFailWords = findFailWords();
+        else
             mWord = mFailWords.get(mIndex);
-            mIndex++;
-        }
+
         setEnvironment(mWord);
 
         imageView.setImageBitmap(onDrawOriginalWaveForm());
@@ -198,6 +193,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         if(score < PASS_SCORE)
             mFailWords.add(mFailWords.get(mIndex));
 
+        mIndex++;
         if(mIndex < mFailWords.size()) {
             mWord = mFailWords.get(mIndex);
             setEnvironment(mWord);
