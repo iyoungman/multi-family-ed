@@ -57,7 +57,7 @@ public class PretreatmentController {
             count++;
         }
 
-        originalModel = findStartIndexAndEndIndex(originalModel);
+        originalModel = findStartIndexAndEndIndex(originalModel, NOISE_BOUND);
         mOriginalDrawModel = setDrawableData(originalModel);
     }
 
@@ -100,23 +100,12 @@ public class PretreatmentController {
             return false;
         }
 
+        int originalMaxValue = findMaximumValueIndex(originalModel.getWaveData());
+        int recordMaxValue = findMaximumValueIndex(recordModel.getWaveData());
         try {
-            recordModel.setWaveData(
-                    normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
-            );
-
-            if(normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
-                return false;
-            }
-        } catch (ArithmeticException e) {
-            messageBox("normalizeSoundSize", e.getMessage());
-            return false;
-        }
-
-        try {
-            originalModel = findStartIndexAndEndIndex(originalModel);
-            recordModel = findStartIndexAndEndIndex(recordModel);
-        } catch (ArrayIndexOutOfBoundsException e) {
+            originalModel = findStartIndexAndEndIndex(originalModel, ((int)(originalModel.getWaveData()[originalMaxValue]*0.3)));
+            recordModel = findStartIndexAndEndIndex(recordModel, ((int)(recordModel.getWaveData()[recordMaxValue]*0.3)));
+        }catch (ArrayIndexOutOfBoundsException e){
             messageBox("findStartIndexAndEndIndex", e.getMessage());
             return false;
         }
@@ -129,8 +118,32 @@ public class PretreatmentController {
             return false;
         }
 
-        maximumValue = findMaximumValueIndex(mOriginalDrawModel) > findMaximumValueIndex(mRecordDrawModel) ? mOriginalDrawModel[findMaximumValueIndex(mOriginalDrawModel)] : mRecordDrawModel[findMaximumValueIndex(mRecordDrawModel)];
+        System.out.println(originalModel.getWaveData()[originalMaxValue]);
+        System.out.println(recordModel.getWaveData()[recordMaxValue]);
+
+        maximumValue = originalModel.getWaveData()[originalMaxValue] > recordModel.getWaveData()[recordMaxValue] ? originalModel.getWaveData()[originalMaxValue] : recordModel.getWaveData()[recordMaxValue];
+
         try {
+            recordModel.setWaveData(
+                    normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
+            );
+           if(normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
+                return false;
+            }
+        }catch (ArithmeticException e){
+            messageBox("normalizeSoundSize", e.getMessage());
+            return false;
+        }
+
+        try {
+            originalModel = findStartIndexAndEndIndex(originalModel, NOISE_BOUND);
+            recordModel = findStartIndexAndEndIndex(recordModel, NOISE_BOUND);
+        }catch (ArrayIndexOutOfBoundsException e){
+            messageBox("findStartIndexAndEndIndex", e.getMessage());
+            return false;
+        }
+
+      try {
             syncSpeechTime(originalModel, recordModel);
         } catch (ArithmeticException | NullPointerException e) {
             messageBox("syncSpeechTime", e.getMessage());
@@ -222,18 +235,20 @@ public class PretreatmentController {
         return resultData;
     }
 
-    private PretreatmentModel findStartIndexAndEndIndex(PretreatmentModel pretreatmentModel) throws ArrayIndexOutOfBoundsException {
+    private PretreatmentModel findStartIndexAndEndIndex(PretreatmentModel pretreatmentModel, int noiseBound) throws ArrayIndexOutOfBoundsException{
         int[] waveData = pretreatmentModel.getWaveData();
 
-        for (int i = 0; i < waveData.length; i++) {
-            if (waveData[i] > NOISE_BOUND && waveData[i + 5] > NOISE_BOUND && waveData[i + 10] > NOISE_BOUND) {
+        for(int i = 0 ; i < waveData.length ; i++){
+            if(waveData[i]>noiseBound && waveData[i+5]>noiseBound && waveData[i+10]>noiseBound) {
                 pretreatmentModel.setStartIndex(i);
                 break;
             }
         }
 
-        for (int i = waveData.length - 1; i > 5; i--) {
-            if (waveData[i] < NOISE_BOUND && waveData[i - 5] > NOISE_BOUND) {
+        for(int i = waveData.length - 1; i > 5 ; i--)
+        {
+            if(waveData[i] < noiseBound && waveData[i-5] > noiseBound){
+
                 pretreatmentModel.setEndIndex(i);
                 break;
             }
