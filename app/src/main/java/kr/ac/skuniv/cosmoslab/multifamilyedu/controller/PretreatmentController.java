@@ -52,8 +52,8 @@ public class PretreatmentController {
         originalModel.setWaveData(decoderWAV.getFrameGains());
 
         int count = 0;
-        while (count < 10) {
-            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+        while (count < 5) {
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 2));
             count++;
         }
 
@@ -88,6 +88,40 @@ public class PretreatmentController {
         if (originalModel.getWaveData() == null || recordModel.getWaveData() == null || recordModel.getWaveData().length < 50)
             return false;
 
+        int[] originalDrawArr = originalModel.getWaveData();
+        int[] recordDrawArr = recordModel.getWaveData();
+
+        for(int i = 0 ; i < 5 ; i++){
+            originalDrawArr = smoothingForDrawWaveform(originalDrawArr, 2);
+            recordDrawArr = smoothingForDrawWaveform(recordDrawArr, 2);
+        }
+        PretreatmentModel originDrawData = PretreatmentModel.builder()
+                .waveData(originalDrawArr).build();
+        PretreatmentModel recordDrawData = PretreatmentModel.builder()
+                .waveData(recordDrawArr).build();
+
+        int originalMaxValue = findMaximumValueIndex(originDrawData.getWaveData());
+        int recordMaxValue = findMaximumValueIndex(recordDrawData.getWaveData());
+        try {
+            originDrawData = findStartIndexAndEndIndex(originDrawData, ((int)(originDrawData.getWaveData()[originalMaxValue]*0.3)));
+            recordDrawData = findStartIndexAndEndIndex(recordDrawData, ((int)(recordDrawData.getWaveData()[recordMaxValue]*0.3)));
+        }catch (ArrayIndexOutOfBoundsException e){
+            messageBox("findStartIndexAndEndIndex", e.getMessage());
+            return false;
+        }
+
+        try {
+            mOriginalDrawModel = setDrawableData(originDrawData);
+            mRecordDrawModel = setDrawableData(recordDrawData);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            messageBox("setDrawableData", e.getMessage());
+            return false;
+        }
+
+        maximumValue = originalModel.getWaveData()[originalMaxValue] > recordModel.getWaveData()[recordMaxValue] ? originalModel.getWaveData()[originalMaxValue] : recordModel.getWaveData()[recordMaxValue];
+
+        //분석용 데이터 셋팅
+
         int count = 0;
         try {
             while (count < 10) {
@@ -99,29 +133,16 @@ public class PretreatmentController {
             messageBox("smoothingForDrawWaveform", e.getMessage());
             return false;
         }
-
-        int originalMaxValue = findMaximumValueIndex(originalModel.getWaveData());
-        int recordMaxValue = findMaximumValueIndex(recordModel.getWaveData());
         try {
-            originalModel = findStartIndexAndEndIndex(originalModel, ((int)(originalModel.getWaveData()[originalMaxValue]*0.3)));
-            recordModel = findStartIndexAndEndIndex(recordModel, ((int)(recordModel.getWaveData()[recordMaxValue]*0.3)));
-        }catch (ArrayIndexOutOfBoundsException e){
-            messageBox("findStartIndexAndEndIndex", e.getMessage());
+            while (count < 20) {
+                originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 1));
+                recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 1));
+                count++;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            messageBox("smoothingForDrawWaveform", e.getMessage());
             return false;
         }
-
-        try {
-            mOriginalDrawModel = setDrawableData(originalModel);
-            mRecordDrawModel = setDrawableData(recordModel);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            messageBox("setDrawableData", e.getMessage());
-            return false;
-        }
-
-        System.out.println(originalModel.getWaveData()[originalMaxValue]);
-        System.out.println(recordModel.getWaveData()[recordMaxValue]);
-
-        maximumValue = originalModel.getWaveData()[originalMaxValue] > recordModel.getWaveData()[recordMaxValue] ? originalModel.getWaveData()[originalMaxValue] : recordModel.getWaveData()[recordMaxValue];
 
         try {
             recordModel.setWaveData(
@@ -171,10 +192,12 @@ public class PretreatmentController {
             messageBox("findSlopeValue", e.getMessage());
             return false;
         }
+        mOriginalModel.setFirstSlopeData(originalSlope);
+        mRecordModel.setFirstSlopeData(recodeSlope);
 
         count = 0;
         try {
-            while (count < 5) {
+            while (count < 10) {
                 originalSlope = smoothingForDrawWaveform(originalSlope, 4);
                 recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
                 count++;
@@ -184,28 +207,14 @@ public class PretreatmentController {
             return false;
         }
 
-        mOriginalModel.setFirstSlopeData(originalSlope);
-        mRecordModel.setFirstSlopeData(recodeSlope);
 
         int[] originalSlope1;
         int[] recodeSlope1;
         try {
-            originalSlope1 = findSlopeValue(mOriginalModel.getFirstSlopeData(), 3);
-            recodeSlope1 = findSlopeValue(mRecordModel.getFirstSlopeData(), 3);
+            originalSlope1 = findSlopeValue(originalSlope, 3);
+            recodeSlope1 = findSlopeValue(recodeSlope, 3);
         } catch (IndexOutOfBoundsException e) {
             messageBox("findSlopeValue", e.getMessage());
-            return false;
-        }
-
-        count = 0;
-        try {
-            while (count < 5) {
-                originalSlope1 = smoothingForDrawWaveform(originalSlope1, 4);
-                recodeSlope1 = smoothingForDrawWaveform(recodeSlope1, 4);
-                count++;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("smoothingForDrawWaveform", e.getMessage());
             return false;
         }
 

@@ -31,7 +31,6 @@ public class DecodeWaveFileController {
     private int mSampleRate;
     private int mChannels;
     private int MAXGAIN = 0;
-    // Member variables used during initialization
     private int mOffset;
 
     public int[] getFrameGains() {
