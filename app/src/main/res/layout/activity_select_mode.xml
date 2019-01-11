@@ -10,24 +10,26 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="60dp"
         android:text=""
-        android:textSize="24sp"
+        android:textSize="50sp"
         android:textStyle="bold" />
 
     <Button
         android:id="@+id/start_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginBottom="30dp"
+        android:textSize="20sp"
         android:background="@drawable/button"
         android:text="학습 시작하기" />
 
     <Button
         android:id="@+id/day_status_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_marginTop="30dp"
+        android:textSize="20sp"
         android:background="@drawable/button"
         android:text="진행현황 보기" />
 </LinearLayout>
