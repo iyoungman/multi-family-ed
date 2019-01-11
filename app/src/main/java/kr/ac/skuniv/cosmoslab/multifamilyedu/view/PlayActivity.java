@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -177,8 +178,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
                 imageView.setImageBitmap(onDrawOriginalWaveForm());
             } else {
                 imageView.setImageBitmap(onDraw());
-
-                //
             }
         }
     }
@@ -206,6 +205,8 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         else
             Toast.makeText(getApplicationContext(), "모든 단어를 합격하셨습니다.", Toast.LENGTH_LONG).show();
+
+        imageView.setImageBitmap(onDrawOriginalWaveForm());
     }
 
     @Override
@@ -327,7 +328,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         int maximumValue = pretreatmentController.getWaveMaximumValue(originalArray);
 
         int bitmapX = originalArray.length;
-        int bitmapY = maximumValue;
+        int bitmapY = 5000;
 
         Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
         Canvas originalCanvas = new Canvas(waveForm);
@@ -351,6 +352,8 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         }
         int[] originalArray = pretreatmentController.getMOriginalDrawModel();
         int[] recordArray = pretreatmentController.getMRecordDrawModel();
+        Log.d("레퍼런스 최대값:", "onDraw: " + pretreatmentController.getWaveMaximumValue(originalArray));
+        Log.d("녹음본 최대값:", "onDraw: " + pretreatmentController.getWaveMaximumValue(recordArray));
         int maximumValue = pretreatmentController.getMaximumValue();
 
         AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(getApplicationContext(), pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
@@ -365,7 +368,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         WaveFormModel recordModel = analysisWaveform.getMRecodeModel();
 
         int bitmapX = originalArray.length > recordArray.length ? originalArray.length : recordArray.length;
-        int bitmapY = maximumValue;
+        int bitmapY = 5000;
 
         Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
         Canvas originalCanvas = new Canvas(waveForm);
@@ -413,20 +416,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         mHighestScore = sharedPreferences.getInt(mWord, 0);
         highestScoreTV.setText(String.valueOf(mHighestScore));
     }
-
-    /*public String changeWord() {
-        Random random = new Random();
-        WaveFileModel[] waveFileModels = WaveFileModel.values();
-        boolean findWord = false;
-        int rand = 0;
-        while (!findWord) {
-            rand = random.nextInt(173);
-            if (sharedPreferences.getInt(waveFileModels[rand].toString(), 0) == 0)
-                findWord = true;
-        }
-        System.out.println("변경된 단어" + waveFileModels[rand].toString());
-        return waveFileModels[rand].toString();
-    }*/
 
     public void saveScore(int score) {
         if (mHighestScore != 0 && score > mHighestScore) {
