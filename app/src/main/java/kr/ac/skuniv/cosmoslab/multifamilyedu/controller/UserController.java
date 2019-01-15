@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SigninActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;

@@ -6,8 +6,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -22,7 +22,6 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DecodeWaveFileController
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DrawWaveFormController;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
-import static java.lang.Thread.sleep;
 
 public class RecordActivity extends Activity {
 

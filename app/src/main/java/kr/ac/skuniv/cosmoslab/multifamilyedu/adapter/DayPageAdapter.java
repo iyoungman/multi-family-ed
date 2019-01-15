@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;

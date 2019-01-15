@@ -2,7 +2,6 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Created by chunso on 2019-01-02.

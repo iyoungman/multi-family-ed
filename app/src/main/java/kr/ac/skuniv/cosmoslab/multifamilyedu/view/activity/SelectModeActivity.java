@@ -57,7 +57,7 @@ public class SelectModeActivity extends AppCompatActivity {
                 intent.putExtra("user_id", mUserId);
                 intent.putExtra("day", mDay);
                 intent.putExtra("word_info", mWordInfoDto);
-                startActivity(intent);
+                startActivityForResult(intent, 1111);
             }
         });
 

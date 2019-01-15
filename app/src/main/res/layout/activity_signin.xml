@@ -59,15 +59,6 @@
             android:textColor="@color/white_greyish"
             android:textStyle="bold" />
 
-        <!--<Button
-            android:id="@+id/anonymousBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/button"
-            android:text="Guest로 시작"
-            android:textColor="@color/white_greyish"
-            android:textStyle="bold" />-->
 
     </LinearLayout>
 

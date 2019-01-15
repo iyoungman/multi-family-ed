@@ -5,7 +5,6 @@ import android.widget.Toast;
 
 import java.util.Map;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
 import retrofit2.Call;
 

@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,6 +21,9 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SignupActivity;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "SigninActivity";
@@ -28,7 +31,6 @@ public class SigninActivity extends AppCompatActivity {
     private EditText pwEditText;
     private Button signinBtn;
     private Button signupBtn;
-//    private Button anonymousBtn;
     private CheckBox autoSigninCheckBox;
 
     private UserController userController;
@@ -64,6 +66,7 @@ public class SigninActivity extends AppCompatActivity {
 
         userController = new UserController(getApplicationContext());
         fileController = new FileController(getApplicationContext());
+
         fileController.createFilePath();
 
         if (isFirstRun) {
@@ -119,20 +122,13 @@ public class SigninActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        /*anonymousBtn = findViewById(R.id.anonymousBtn);
-        anonymousBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserModel userModel = UserModel.builder()
-                        .id("anonymous")
-                        .level("1")
-                        .build();
-                Intent intent = new Intent(getApplicationContext(), DayActivity.class);
-                intent.putExtra("login_model", userModel);
-                startActivity(intent);
-            }
-        });*/
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
     }
 
     @Override
