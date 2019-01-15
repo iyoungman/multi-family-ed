@@ -1,7 +1,6 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -36,15 +35,15 @@ public class AnalysisWaveFormController {
         int areaScore = 0;
         try {
             areaScore = calculateAreaScore(mOriginalModel.getWaveData(), mRecodeModel.getWaveData());
-        }catch (NullPointerException e){
-            messageBox("calculateAreaScore", e.getMessage());
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException e){
+            Log.d(TAG, "getFinalScore: 면적점수를 계산하는데 문제가 생김");
             return 0;
         }
         int shapeScore=0;
         try {
             shapeScore = calculateShapeScore(mOriginalModel, mRecodeModel);
         }catch (Throwable e){
-            messageBox("calculateShapeScore", e.getMessage());
+            Log.d(TAG, "getFinalScore: 모양점수를 계산하는데 문제가 생김");
             return 0;
         }
 
@@ -81,7 +80,7 @@ public class AnalysisWaveFormController {
      * 두 파형의 합집합 면적과 교집합 면적을 나누어 얼마나 비슷한지 비교한다.
      * 모양 점수 = (두 파형의 교집합) / (두 파형의 합집합) * 100
      */
-    private int calculateAreaScore(int[] originalData, int[] recodeData) throws NullPointerException{
+    private int calculateAreaScore(int[] originalData, int[] recodeData) throws NullPointerException, ArrayIndexOutOfBoundsException{
         int bigValue = 0, smallValue = 0;
         int sumBigValue = 0, sumSmallValue = 0;
         double score = 0;
@@ -121,24 +120,25 @@ public class AnalysisWaveFormController {
      * 체크포인트의 값들을 하나씩 나머지 Wave파일의 파형과 비교한다.
      * 첫번째로 제대로된 극점인지를 인지한다.(100값이 넘은...)
      */
-    private int calculateShapeScore(WaveFormModel originalData, WaveFormModel recodeData) throws Throwable {
+    private int calculateShapeScore(WaveFormModel originalData, WaveFormModel recodeData) {
         int finalScore =0;
 
         try {
             originalData = findExtremePoints(originalData);
             recodeData = findExtremePoints(recodeData);
-        }catch (Throwable e){
-            messageBox("findExtremePoints", e.getMessage());
+        }catch (ArrayIndexOutOfBoundsException e){
+            Log.d(TAG, "calculateShapeScore: 극점을 찾는데 문제가 생김");
             return 0;
         }
 
-        if(recodeData == null)
-            throw new Throwable("극점이 하나도 나오지 않았습니다.");
+        if(originalData == null && recodeData == null)
+            return 0;
 
         try {
             finalScore = synchronousTwoCheckPoints(originalData, recodeData);
-        }catch (NullPointerException | ArrayIndexOutOfBoundsException e){
-            messageBox("synchronousTwoCheckPoints", e.getMessage());
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e){
+            Log.d(TAG, "calculateShapeScore: 점수를 계산하는데 문제가 생김");
+            return 0;
         }
 
         return finalScore;
@@ -154,7 +154,7 @@ public class AnalysisWaveFormController {
      *
      *
      */
-    private WaveFormModel findExtremePoints(WaveFormModel data) throws ArrayIndexOutOfBoundsException, Throwable{
+    private WaveFormModel findExtremePoints(WaveFormModel data) throws ArrayIndexOutOfBoundsException{
         int[] firstSlopeValue = data.getFirstSlopeData();
         int[] secondSlopeValue = data.getSecondSlopeData();
 
@@ -204,7 +204,7 @@ public class AnalysisWaveFormController {
         }
 
         if(checkPoints.isEmpty())
-            throw new Throwable("극점이 하나도 존재하지 않습니다.");
+            return null;
 
         data.setCheckPoints(checkPoints);
         data.setHidenCheckPoints(hidenCheckPoints);
@@ -224,31 +224,26 @@ public class AnalysisWaveFormController {
      * 각 구간별 점수 = 100 / (원본의 극점의 개수 +1) 로 하고 Original 파일을 기준으로 계산한다.
      *
      */
-    private int synchronousTwoCheckPoints(WaveFormModel _originalData, WaveFormModel _recodeData)throws NullPointerException, ArrayIndexOutOfBoundsException{
+    private int synchronousTwoCheckPoints(WaveFormModel _originalData, WaveFormModel _recodeData)throws NullPointerException, ArrayIndexOutOfBoundsException, ArithmeticException{
         List<Integer> originalCheckPoints = _originalData.getCheckPoints();
         List<Integer> originaalHidenCheckPoints = _originalData.getHidenCheckPoints();
         List<Integer> recodeCheckPoints = _recodeData.getCheckPoints();
         List<Integer> recodeHidenCheckPoints = _recodeData.getHidenCheckPoints();
 
-        if(originalCheckPoints.size() != recodeCheckPoints.size()){
+        if(originalCheckPoints.size() != recodeCheckPoints.size()) {
             int cnt = (originalCheckPoints.size() - recodeCheckPoints.size()) / 2;
             int i = 0;
-            try {
 
-                if(cnt > 0){
-                    while(i < Math.abs(cnt) && i < recodeHidenCheckPoints.size()){
-                        recodeCheckPoints.addAll(convertHidenToExtreme(_recodeData,i));
-                        i++;
-                    }
-                }else{
-                    while(i < Math.abs(cnt) && i < originaalHidenCheckPoints.size()){
-                        originalCheckPoints.addAll(convertHidenToExtreme(_originalData,i));
-                        i++;
-                    }
+            if (cnt > 0) {
+                while (i < Math.abs(cnt) && i < recodeHidenCheckPoints.size()) {
+                    recodeCheckPoints.addAll(convertHidenToExtreme(_recodeData, i));
+                    i++;
                 }
-            }catch (ArrayIndexOutOfBoundsException e){
-                messageBox("convertHidenToExtreme", e.getMessage());
-                return 0;
+            } else {
+                while (i < Math.abs(cnt) && i < originaalHidenCheckPoints.size()) {
+                    originalCheckPoints.addAll(convertHidenToExtreme(_originalData, i));
+                    i++;
+                }
             }
         }
         Collections.sort(originalCheckPoints); Collections.sort(recodeCheckPoints);
@@ -322,7 +317,7 @@ public class AnalysisWaveFormController {
         return newCheckPoints;
     }
 
-    private int getShapeScore(WaveFormModel originalModel, WaveFormModel recodeModel) {
+    private int getShapeScore(WaveFormModel originalModel, WaveFormModel recodeModel) throws ArrayIndexOutOfBoundsException, ArithmeticException, NullPointerException{
         List<Integer> originalExtreme = originalModel.getFinalExtremePoints();
         List<Integer> recodeExtreme = recodeModel.getFinalExtremePoints();
         int score = 0;
@@ -331,20 +326,20 @@ public class AnalysisWaveFormController {
         List<Integer> R_compareValue = new ArrayList<>();
         List<Double> O_rateOfLengths = new ArrayList<>(), R_rateOfLengths = new ArrayList<>();
 
-        O_compareValue.add(0); O_compareValue.addAll(originalExtreme); O_compareValue.add(originalModel.getWaveData().length - 1);
-        R_compareValue.add(0); R_compareValue.addAll(recodeExtreme); R_compareValue.add(recodeModel.getWaveData().length - 1);
+        O_compareValue.add(0);
+        O_compareValue.addAll(originalExtreme);
+        O_compareValue.add(originalModel.getWaveData().length - 1);
+        R_compareValue.add(0);
+        R_compareValue.addAll(recodeExtreme);
+        R_compareValue.add(recodeModel.getWaveData().length - 1);
 
         int largeSize = O_compareValue.size() > R_compareValue.size() ? O_compareValue.size() : R_compareValue.size();//compareValue.size() = 시작점,끝점 포함 극점 개수
         int smallSize = O_compareValue.size() < R_compareValue.size() ? O_compareValue.size() : R_compareValue.size();//결국은 큰 구간으로 비교하는 것
         int sectionCnt = largeSize - 1; //점수낼 구간 갯수
 
-        try {
-            O_rateOfLengths = calcurateRateOfLength(O_compareValue,originalModel.getWaveData(),smallSize);
-            R_rateOfLengths = calcurateRateOfLength(R_compareValue,recodeModel.getWaveData(), smallSize);
-        }catch (ArrayIndexOutOfBoundsException | ArithmeticException e){
-            messageBox("calcurateRateOfLength", e.getMessage());
-            return 0;
-        }
+        O_rateOfLengths = calcurateRateOfLength(O_compareValue, originalModel.getWaveData(), smallSize);
+        R_rateOfLengths = calcurateRateOfLength(R_compareValue, recodeModel.getWaveData(), smallSize);
+
 
         for (int i = 0; i < O_rateOfLengths.size(); i++) {
             if (O_rateOfLengths.get(i) >= R_rateOfLengths.get(i))
@@ -385,16 +380,5 @@ public class AnalysisWaveFormController {
         }
 
         return rateOfLength;
-    }
-
-    private void messageBox(String method, String message) {
-        Log.d("EXCEPTION: " + method,  message);
-
-        AlertDialog.Builder messageBox = new AlertDialog.Builder(context);
-        messageBox.setTitle(method);
-        messageBox.setMessage(message);
-        messageBox.setCancelable(false);
-        messageBox.setNeutralButton("OK", null);
-        messageBox.show();
     }
 }

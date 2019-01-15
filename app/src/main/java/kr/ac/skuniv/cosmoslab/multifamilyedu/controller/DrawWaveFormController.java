@@ -1,21 +1,17 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.PretreatmentModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 import lombok.Getter;
 
 @Getter

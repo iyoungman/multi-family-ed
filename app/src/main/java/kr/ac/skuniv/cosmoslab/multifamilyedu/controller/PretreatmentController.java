@@ -1,7 +1,6 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import java.io.File;
@@ -61,7 +60,7 @@ public class PretreatmentController {
         mOriginalDrawModel = setDrawableData(originalModel);
     }
 
-    public boolean run(String originalFilePath, String recordFilePath) {
+    public boolean run(String originalFilePath, String recordFilePath) throws ArrayIndexOutOfBoundsException, NullPointerException, ArithmeticException{
         DecodeWaveFileController decoderOriginalWAV = new DecodeWaveFileController();
         DecodeWaveFileController decoderRecodeWAV = new DecodeWaveFileController();
 
@@ -91,7 +90,7 @@ public class PretreatmentController {
         int[] originalDrawArr = originalModel.getWaveData();
         int[] recordDrawArr = recordModel.getWaveData();
 
-        for(int i = 0 ; i < 5 ; i++){
+        for (int i = 0; i < 5; i++) {
             originalDrawArr = smoothingForDrawWaveform(originalDrawArr, 2);
             recordDrawArr = smoothingForDrawWaveform(recordDrawArr, 2);
         }
@@ -102,121 +101,73 @@ public class PretreatmentController {
 
         int originalMaxValue = findMaximumValueIndex(originDrawData.getWaveData());
         int recordMaxValue = findMaximumValueIndex(recordDrawData.getWaveData());
-        try {
-            originDrawData = findStartIndexAndEndIndex(originDrawData, ((int)(originDrawData.getWaveData()[originalMaxValue]*0.3)));
-            recordDrawData = findStartIndexAndEndIndex(recordDrawData, ((int)(recordDrawData.getWaveData()[recordMaxValue]*0.3)));
-        }catch (ArrayIndexOutOfBoundsException e){
-            messageBox("findStartIndexAndEndIndex", e.getMessage());
-            return false;
-        }
 
-        try {
-            mOriginalDrawModel = setDrawableData(originDrawData);
-            mRecordDrawModel = setDrawableData(recordDrawData);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            messageBox("setDrawableData", e.getMessage());
-            return false;
-        }
+        originDrawData = findStartIndexAndEndIndex(originDrawData, ((int) (originDrawData.getWaveData()[originalMaxValue] * 0.3)));
+        recordDrawData = findStartIndexAndEndIndex(recordDrawData, ((int) (recordDrawData.getWaveData()[recordMaxValue] * 0.3)));
+
+        mOriginalDrawModel = setDrawableData(originDrawData);
+        mRecordDrawModel = setDrawableData(recordDrawData);
 
         maximumValue = originalModel.getWaveData()[originalMaxValue] > recordModel.getWaveData()[recordMaxValue] ? originalModel.getWaveData()[originalMaxValue] : recordModel.getWaveData()[recordMaxValue];
 
         //분석용 데이터 셋팅
-
         int count = 0;
-        try {
-            while (count < 10) {
-                originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
-                recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
-                count++;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("smoothingForDrawWaveform", e.getMessage());
-            return false;
+
+        while (count < 10) {
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
+            count++;
         }
-        try {
-            while (count < 20) {
-                originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 1));
-                recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 1));
-                count++;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("smoothingForDrawWaveform", e.getMessage());
+
+        while (count < 20) {
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 1));
+            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 1));
+            count++;
+        }
+
+        recordModel.setWaveData(
+                normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
+        );
+
+        if (normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
             return false;
         }
 
-        try {
-            recordModel.setWaveData(
-                    normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
-            );
-           if(normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
-                return false;
-            }
-        }catch (ArithmeticException e){
-            messageBox("normalizeSoundSize", e.getMessage());
-            return false;
-        }
+        originalModel = findStartIndexAndEndIndex(originalModel, NOISE_BOUND);
+        recordModel = findStartIndexAndEndIndex(recordModel, NOISE_BOUND);
 
-        try {
-            originalModel = findStartIndexAndEndIndex(originalModel, NOISE_BOUND);
-            recordModel = findStartIndexAndEndIndex(recordModel, NOISE_BOUND);
-        }catch (ArrayIndexOutOfBoundsException e){
-            messageBox("findStartIndexAndEndIndex", e.getMessage());
-            return false;
-        }
-
-      try {
-            syncSpeechTime(originalModel, recordModel);
-        } catch (ArithmeticException | NullPointerException e) {
-            messageBox("syncSpeechTime", e.getMessage());
-            return false;
-        }
+        syncSpeechTime(originalModel, recordModel);
 
         count = 0;
-        try {
-            while (count < 5) {
-                mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 4));
-                mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(), 4));
-                count++;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("smoothingForDrawWaveform", e.getMessage());
-            return false;
+        while (count < 5) {
+            mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 4));
+            mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(), 4));
+            count++;
         }
 
         int[] originalSlope;
         int[] recodeSlope;
-        try {
-            originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 3);
-            recodeSlope = findSlopeValue(mRecordModel.getWaveData(), 3);
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("findSlopeValue", e.getMessage());
-            return false;
-        }
+
+        originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 3);
+        recodeSlope = findSlopeValue(mRecordModel.getWaveData(), 3);
+
         mOriginalModel.setFirstSlopeData(originalSlope);
         mRecordModel.setFirstSlopeData(recodeSlope);
 
         count = 0;
-        try {
-            while (count < 10) {
-                originalSlope = smoothingForDrawWaveform(originalSlope, 4);
-                recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
-                count++;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("smoothingForDrawWaveform", e.getMessage());
-            return false;
+
+        while (count < 10) {
+            originalSlope = smoothingForDrawWaveform(originalSlope, 4);
+            recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
+            count++;
         }
 
 
         int[] originalSlope1;
         int[] recodeSlope1;
-        try {
-            originalSlope1 = findSlopeValue(originalSlope, 3);
-            recodeSlope1 = findSlopeValue(recodeSlope, 3);
-        } catch (IndexOutOfBoundsException e) {
-            messageBox("findSlopeValue", e.getMessage());
-            return false;
-        }
+        originalSlope1 = findSlopeValue(originalSlope, 3);
+        recodeSlope1 = findSlopeValue(recodeSlope, 3);
+
 
         mOriginalModel.setSecondSlopeData(originalSlope1);
         mRecordModel.setSecondSlopeData(recodeSlope1);
@@ -266,14 +217,10 @@ public class PretreatmentController {
         return pretreatmentModel;
     }
 
-    private int[] normalizeSoundSize(int[] originalWaveData, int[] recordWaveData) throws ArithmeticException {
+    private int[] normalizeSoundSize(int[] originalWaveData, int[] recordWaveData) throws ArithmeticException, ArrayIndexOutOfBoundsException {
         double graphRatio = 0.0;
-        try {
-            graphRatio = getAverageFromHistogram(originalWaveData, originalWaveData.length) / (double) (getAverageFromHistogram(recordWaveData, recordWaveData.length));//최댓값으로 비율 구함
-        } catch (ArrayIndexOutOfBoundsException e) {
-            messageBox("getAverageFromHistogram", e.getMessage());
-            return null;
-        }
+        graphRatio = getAverageFromHistogram(originalWaveData, originalWaveData.length) / (double) (getAverageFromHistogram(recordWaveData, recordWaveData.length));//최댓값으로 비율 구함
+
 
         //비율 구하기
         graphRatio = Math.round(graphRatio * 100) / 100.0;//소수점 둘째자리까지 반올림
@@ -314,7 +261,7 @@ public class PretreatmentController {
         return average;
     }
 
-    private void syncSpeechTime(PretreatmentModel originalModel, PretreatmentModel recordModel) throws ArithmeticException, NullPointerException {
+    private void syncSpeechTime(PretreatmentModel originalModel, PretreatmentModel recordModel) throws ArithmeticException, NullPointerException, ArrayIndexOutOfBoundsException {
         boolean whoIsBigger = true; //original이 더 크다고 가정
         int originalDataLengDiff = originalModel.getEndIndex() - originalModel.getStartIndex() + 1;
         int recordDataLengDiff = recordModel.getEndIndex() - recordModel.getStartIndex() + 1;
@@ -332,12 +279,9 @@ public class PretreatmentController {
             int syncLeng = (int) Math.round(lengDiff * syncGratio);
             int index = Math.round(recordDataLengDiff / syncLeng);
 
-            try {
-                originalModel.setWaveData(setArrFormatIfLarge(originalModel, originalDataLengDiff, 0));
-                recordModel.setWaveData(setArrFormatIfLarge(recordModel, originalDataLengDiff, index));
-            } catch (ArrayIndexOutOfBoundsException e) {
-                messageBox("setArrFormatIfLarge", e.getMessage());
-            }
+            originalModel.setWaveData(setArrFormatIfLarge(originalModel, originalDataLengDiff, 0));
+            recordModel.setWaveData(setArrFormatIfLarge(recordModel, originalDataLengDiff, index));
+
         } else {
             int lengDiff = recordDataLengDiff - originalDataLengDiff;
             double lengGratio = (double) recordDataLengDiff / (double) originalDataLengDiff;
@@ -345,12 +289,9 @@ public class PretreatmentController {
             int syncLeng = (int) Math.round(lengDiff * syncGratio);
             int index = Math.round(recordDataLengDiff / syncLeng);
 
-            try {
-                originalModel.setWaveData(setArrFormatIfSmall(originalModel, originalDataLengDiff, 0));
-                recordModel.setWaveData(setArrFormatIfSmall(recordModel, recordDataLengDiff, index));
-            } catch (ArrayIndexOutOfBoundsException e) {
-                messageBox("setArrFormatIfSmall", e.getMessage());
-            }
+            originalModel.setWaveData(setArrFormatIfSmall(originalModel, originalDataLengDiff, 0));
+            recordModel.setWaveData(setArrFormatIfSmall(recordModel, recordDataLengDiff, index));
+
         }
 
         mOriginalModel.setWaveData(originalModel.getWaveData());
@@ -434,7 +375,7 @@ public class PretreatmentController {
         return resultData;
     }
 
-    private int findMaximumValueIndex(int[] waveData) {
+    private int findMaximumValueIndex(int[] waveData) throws NullPointerException, ArrayIndexOutOfBoundsException{
         int maximumValueIndex = 0;
         int max = 0;
         for (int i = 0; i < waveData.length; i++) {
@@ -468,7 +409,7 @@ public class PretreatmentController {
 
         return analysisData;
     }
-
+/*
     private void messageBox(String method, String message) {
         Log.d("EXCEPTION: " + method, message);
 
@@ -478,7 +419,7 @@ public class PretreatmentController {
         messageBox.setCancelable(false);
         messageBox.setNeutralButton("OK", null);
         messageBox.show();
-    }
+    }*/
 
 
 }

@@ -1,15 +1,12 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
 import lombok.Getter;
-import okhttp3.Headers;
 import retrofit2.Call;
 import retrofit2.Response;
 

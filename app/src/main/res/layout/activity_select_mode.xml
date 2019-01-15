@@ -31,5 +31,5 @@
         android:layout_marginTop="30dp"
         android:textSize="20sp"
         android:background="@drawable/button"
-        android:text="진행현황 보기" />
+        android:text="학습현황 보기" />
 </LinearLayout>
