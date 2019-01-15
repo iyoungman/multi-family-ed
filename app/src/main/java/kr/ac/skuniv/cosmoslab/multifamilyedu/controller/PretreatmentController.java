@@ -112,14 +112,7 @@ public class PretreatmentController {
 
         //분석용 데이터 셋팅
         int count = 0;
-
-        while (count < 10) {
-            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
-            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
-            count++;
-        }
-
-        while (count < 20) {
+        while(count < 10){
             originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 1));
             recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 1));
             count++;
@@ -140,33 +133,47 @@ public class PretreatmentController {
 
         count = 0;
         while (count < 5) {
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
+            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
+            count++;
+        }
+
+        count = 0;
+        while (count < 30) {
+            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 2));
+            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 2));
+            count++;
+        }
+        mOriginalModel.setWaveData(originalModel.getWaveData());
+        mRecordModel.setWaveData(recordModel.getWaveData());
+/*        count = 0;
+        while (count < 5) {
             mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 4));
             mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(), 4));
             count++;
-        }
+        }*/
 
         int[] originalSlope;
         int[] recodeSlope;
 
-        originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 3);
-        recodeSlope = findSlopeValue(mRecordModel.getWaveData(), 3);
+        originalSlope = findSlopeValue(mOriginalModel.getWaveData(), 1);
+        recodeSlope = findSlopeValue(mRecordModel.getWaveData(), 1);
 
         mOriginalModel.setFirstSlopeData(originalSlope);
         mRecordModel.setFirstSlopeData(recodeSlope);
 
         count = 0;
-
-        while (count < 10) {
-            originalSlope = smoothingForDrawWaveform(originalSlope, 4);
-            recodeSlope = smoothingForDrawWaveform(recodeSlope, 4);
+        while (count < 20) {
+            originalSlope = smoothingForDrawWaveform(originalSlope, 2);
+            recodeSlope = smoothingForDrawWaveform(recodeSlope, 2);
             count++;
         }
 
 
         int[] originalSlope1;
         int[] recodeSlope1;
-        originalSlope1 = findSlopeValue(originalSlope, 3);
-        recodeSlope1 = findSlopeValue(recodeSlope, 3);
+        originalSlope1 = findSlopeValue(originalSlope, 1);
+        recodeSlope1 = findSlopeValue(recodeSlope, 1);
 
 
         mOriginalModel.setSecondSlopeData(originalSlope1);

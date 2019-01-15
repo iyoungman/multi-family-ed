@@ -19,10 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
 
 /**
  * Created by chunso on 2019-01-12.
@@ -50,6 +53,8 @@ public class PlayFragment extends Fragment implements PlayListener {
     int mHighestScore, mFinalScore = 0;
 
     FileController fileController = new FileController(mContext);
+
+    WaveFormModel mOriginalModel, mRecordModel;
 
     public PlayFragment() {
     }
@@ -206,5 +211,79 @@ public class PlayFragment extends Fragment implements PlayListener {
             passTv.setText("불통과");
         }
         passTv.startAnimation(animation);
+    }
+
+    public Bitmap onDrawTest(Context context, String originalPath, String recordPath) {
+        PretreatmentController pretreatmentController = new PretreatmentController(context);
+        try {
+            if (!pretreatmentController.run(originalPath, recordPath)) {
+                Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+                return null;
+            }
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e){
+            Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "onDraw: " + e.getMessage());
+        }
+        int[] originalArray = pretreatmentController.getMOriginalDrawModel();
+        int[] recordArray = pretreatmentController.getMRecordDrawModel();
+        int maximumValue = pretreatmentController.getMaximumValue();
+
+        AnalysisWaveFormController analysisWaveform = new AnalysisWaveFormController(context, pretreatmentController.getMOriginalModel(), pretreatmentController.getMRecordModel());
+        mOriginalModel = analysisWaveform.getMOriginalModel();
+        mRecordModel = analysisWaveform.getMRecodeModel();
+        mFinalScore = analysisWaveform.getFinalScore();
+
+        if (mFinalScore == 0) {
+            Toast.makeText(context, "점수를 계산하는데 문제가 발생되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        int bitmapX = mOriginalModel.getWaveData().length > mRecordModel.getWaveData().length ? mOriginalModel.getWaveData().length : mRecordModel.getWaveData().length;
+        int bitmapY = 5000;
+
+        Bitmap waveForm = Bitmap.createBitmap(bitmapX, bitmapY, Bitmap.Config.ARGB_8888);
+        Canvas originalCanvas = new Canvas(waveForm);
+        Canvas recodeCanvas = new Canvas(waveForm);
+
+        Paint originalWaveform = new Paint();
+        originalWaveform.setColor(Color.BLUE);
+        originalWaveform.setAlpha(40);
+
+        Paint recodeWaveform = new Paint();
+        recodeWaveform.setColor(Color.RED);
+        recodeWaveform.setAlpha(60);
+
+        for (int i = 0; i < mOriginalModel.getWaveData().length; i++)
+            originalCanvas.drawLine(i, bitmapY - mOriginalModel.getWaveData()[i], i, bitmapY, originalWaveform);
+        for (int i = 0; i < mRecordModel.getWaveData().length; i++)
+            recodeCanvas.drawLine(i, bitmapY - mRecordModel.getWaveData()[i], i, bitmapY, recodeWaveform);
+
+        originalWaveform.setAlpha(80);
+        recodeWaveform.setAlpha(100);
+        List<Integer> originCheckPoint = mOriginalModel.getCheckPoints();
+        List<Integer> recordCheckPoint = mRecordModel.getCheckPoints();
+
+        for(int i = 0; i< originCheckPoint.size(); i++ ){
+            originalCanvas.drawLine(originCheckPoint.get(i), bitmapY -mOriginalModel.getWaveData()[originCheckPoint.get(i)], originCheckPoint.get(i), bitmapY, originalWaveform);
+        }
+
+        for(int i = 0; i< recordCheckPoint.size(); i++ ){
+            recodeCanvas.drawLine(recordCheckPoint.get(i), bitmapY - mRecordModel.getWaveData()[recordCheckPoint.get(i)], recordCheckPoint.get(i), bitmapY, recodeWaveform);
+        }
+
+        originalWaveform.setColor(Color.BLACK);
+        recodeWaveform.setColor(Color.BLACK);
+
+        List<Integer> originHidenCheckPoint = mOriginalModel.getHidenCheckPoints();
+        List<Integer> recordHidenCheckPoint = mRecordModel.getHidenCheckPoints();
+
+        for(int i = 0; i< originHidenCheckPoint.size(); i++ ){
+            originalCanvas.drawLine(originHidenCheckPoint.get(i), bitmapY -mOriginalModel.getWaveData()[originHidenCheckPoint.get(i)], originHidenCheckPoint.get(i), bitmapY, originalWaveform);
+        }
+
+        for(int i = 0; i< recordHidenCheckPoint.size(); i++ ){
+            recodeCanvas.drawLine(recordHidenCheckPoint.get(i), bitmapY - mRecordModel.getWaveData()[recordHidenCheckPoint.get(i)], recordHidenCheckPoint.get(i), bitmapY, recodeWaveform);
+        }
+        return waveForm;
     }
 }
