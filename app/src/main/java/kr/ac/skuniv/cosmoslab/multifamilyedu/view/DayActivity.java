@@ -8,17 +8,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.DayPageAdapter;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.WordPageAdapter;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import lombok.Getter;
 
 /**
  * Created by chunso on 2019-01-02.
