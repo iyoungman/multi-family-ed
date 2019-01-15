@@ -111,20 +111,14 @@ public class SigninActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        anonymousBtn = findViewById(R.id.anonymousBtn);
-        anonymousBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserModel userModel = UserModel.builder()
-                        .id("anonymous")
-                        .level("1")
-                        .build();
-                Intent intent = new Intent(getApplicationContext(), DayActivity.class);
-                intent.putExtra("login_model", userModel);
-                startActivity(intent);
-            }
-        });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+        
     }
 
     @Override
