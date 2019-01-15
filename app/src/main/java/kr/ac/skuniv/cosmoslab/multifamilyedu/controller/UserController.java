@@ -3,12 +3,10 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Toast;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SigninActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
@@ -111,6 +109,7 @@ public class UserController {
         editor = auto.edit();
         editor.putBoolean("autoLogin", false);
         editor.clear();
+        editor.putBoolean("isFirstRun", false);
         editor.commit();
 
         Intent intent = new Intent(context, SigninActivity.class);

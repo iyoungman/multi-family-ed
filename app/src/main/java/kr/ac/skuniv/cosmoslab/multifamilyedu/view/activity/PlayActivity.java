@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -99,7 +99,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         fileController = new FileController(getApplicationContext());
 
         highestScoreTV = findViewById(R.id.highestScoreTV);
-        preScoreTV = findViewById(R.id.preScore);
+//        preScoreTV = findViewById(R.id.preScore);
         textView = findViewById(R.id.wordTV);
         imageView = findViewById(R.id.displayView);
 
@@ -189,7 +189,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         if (mPreScore != mHighestScore)
             highestScoreTV.setText(String.valueOf(mHighestScore));
         mPreScore = score;
-        preScoreTV.setText(String.valueOf(mPreScore));
+//        preScoreTV.setText(String.valueOf(mPreScore));
     }
 
     @Override
@@ -218,7 +218,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             Intent intent = new Intent();
             intent.putExtra("word_info", mWordInfoDto);
             setResult(RESULT_OK, intent);
-        }else if(mTag.equals("select")){
+        }else if(mTag.equals("help_select")){
             Intent intent = new Intent(this, DayStatusActivity.class);
             intent.putExtra("tag", "play");
             intent.putExtra("user_id", mUserId);
@@ -411,7 +411,7 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
         mPCMPath = FILE_PATH + "/RECORD/" + mWord + ".pcm";
         mImagePath = FILE_PATH + "/IMAGE/" + mWord + ".png";
         textView.setText(mWord);
-        preScoreTV.setText("0");
+//        preScoreTV.setText("0");
 
         mHighestScore = sharedPreferences.getInt(mWord, 0);
         highestScoreTV.setText(String.valueOf(mHighestScore));
@@ -438,7 +438,6 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
             PlayController playController = new PlayController(getApplicationContext());
             mPassWords.add(playController.setWordPassInfo(mUserId, mWord));
         }
-
         System.out.println("점수: " + score);
         System.out.println(sharedPreferences.getInt(mWord, 0));
     }
@@ -458,9 +457,14 @@ public class PlayActivity extends AppCompatActivity implements DialogResult.OnCo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_help:
+                Intent intent = new Intent(PlayActivity.this, HelpActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.action_signout:
                 userController.signoutUser();
                 finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

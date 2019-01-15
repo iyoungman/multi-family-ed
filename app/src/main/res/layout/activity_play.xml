@@ -22,7 +22,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textSize="20sp" />
+                android:textSize="20sp" />-->
         </LinearLayout>
 
         <TextView
@@ -141,7 +141,7 @@
             android:drawableTop="@drawable/play"
             android:text="듣기"
             android:topLeftRadius="10dp"
-            android:topRightRadius="10dp" />
+            android:topRightRadius="10dp"/>
 
         <Button
             android:id="@+id/recordBtn"
