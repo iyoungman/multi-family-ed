@@ -46,7 +46,7 @@ public class DrawWaveFormController extends View {
         waveRecordLine.setAlpha(120);
         waveRecordLine.setColor(Color.DKGRAY);
         waveRecordLine.setStyle(Paint.Style.FILL_AND_STROKE);
-        waveRecordLine.setStrokeWidth(23.0f);
+        waveRecordLine.setStrokeWidth(11.0f);
         waveRecordLine.setStrokeCap(Paint.Cap.ROUND);
 
         return waveRecordLine;

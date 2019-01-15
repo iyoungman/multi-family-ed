@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -122,6 +122,11 @@ public class DayStatusActivity extends AppCompatActivity {
             case R.id.action_signout:
                 userController.signoutUser();
                 finish();
+                return true;
+            case R.id.action_help:
+                Intent intent = new Intent(DayStatusActivity.this, HelpActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

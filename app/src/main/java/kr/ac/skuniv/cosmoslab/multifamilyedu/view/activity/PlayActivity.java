@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,12 +31,16 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.PlayPageAdapter;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayStatusActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.RecordActivity;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
 /**
- * Created by chunso on 2019-01-12.
+ * Created by chunso on 2018-12-03.
  */
 
 public class PlayActivity extends AppCompatActivity implements PlayFragment.FragmentListener{
@@ -48,6 +54,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
     WordInfoDto mWordInfoDto;
     List<String> mPassWords = new ArrayList<>();
     List<String> mFailWords = new ArrayList<>();
+    boolean isRecording = false;
     boolean isPlaying = false;
     SharedPreferences sharedPreferences;
 
@@ -63,6 +70,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
 
     FileController fileController;
     PlayPageAdapter playPageAdapter;
+    UserController userController;
 
     int mPosition;
 
@@ -72,6 +80,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         setContentView(R.layout.activity_play);
         sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
         fileController = new FileController(getApplicationContext());
+        userController = new UserController(getApplicationContext());
 
         Intent intent = getIntent();
         mTag = intent.getStringExtra("tag");
@@ -339,7 +348,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
             map.put(passWord.get(i), "합격");
         return map;
     }
-
     public void setEnvironment(String word) {
         if (!fileController.confirmFile(word + ".wav")) {
             Toast.makeText(getApplicationContext(), "파일 없으므로 다운로드", Toast.LENGTH_SHORT).show();
@@ -349,5 +357,24 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         mOriginalPath = FILE_PATH + "/ORIGINAL/" + word + ".wav";
         mRecordPath = FILE_PATH + "/RECORD/" + word + ".wav";
         mPCMPath = FILE_PATH + "/RECORD/" + word + ".pcm";
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                Intent intent = new Intent(PlayActivity.this, HelpActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_signout:
+                userController.signoutUser();
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

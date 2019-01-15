@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

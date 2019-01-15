@@ -6,10 +6,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.SignupDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.network.NetRetrofit;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 import lombok.Getter;
 import lombok.Setter;
 import retrofit2.Call;
@@ -109,6 +109,7 @@ public class UserController {
         editor = auto.edit();
         editor.putBoolean("autoLogin", false);
         editor.clear();
+        editor.putBoolean("isFirstRun", false);
         editor.commit();
 
         Intent intent = new Intent(context, SigninActivity.class);
