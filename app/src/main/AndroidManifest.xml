@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.SplashActivity"
+        <activity android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,15 +30,16 @@
         </activity>
         <activity android:name=".view.SigninActivity"/>
         <activity
-            android:name=".view.SignupActivity"
+            android:name=".view.activity.SignupActivity"
             android:label="@string/signup_name" />
         <activity
-            android:name=".view.PlayActivity"
+            android:name=".view.activity.PlayActivity"
             android:label="@string/play_name" />
-        <activity android:name=".view.DayActivity" />
-        <activity android:name=".view.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
-        <activity android:name=".view.DayStatusActivity"/>
-        <activity android:name=".view.SelectModeActivity"/>
+        <activity android:name=".view.activity.DayActivity" />
+        <activity android:name=".view.activity.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".view.activity.DayStatusActivity"/>
+        <activity android:name=".view.activity.SelectModeActivity"/>
+        <activity android:name=".view.activity.HelpActivity"/>
     </application>
 
 </manifest>

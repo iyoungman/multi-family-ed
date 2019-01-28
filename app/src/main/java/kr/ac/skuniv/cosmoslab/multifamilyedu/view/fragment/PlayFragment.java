@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,6 +26,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.AnalysisWaveFormControll
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PretreatmentController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFormModel;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayListener;
 
 /**
  * Created by chunso on 2019-01-12.

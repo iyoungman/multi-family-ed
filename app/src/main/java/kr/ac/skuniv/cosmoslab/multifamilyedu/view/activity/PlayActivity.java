@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -33,9 +34,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayStatusActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.RecordActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.PlayFragment;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
 
@@ -79,6 +78,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
+
         fileController = new FileController(getApplicationContext());
         userController = new UserController(getApplicationContext());
 
@@ -88,7 +88,8 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         mDay = intent.getStringExtra("day");
         mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
 
-        mFailWords = findFailWords();
+//        mFailWords = findFailWords();
+        mFailWords = new ArrayList<>(mWordInfoDto.getWordlist());
 
         if(mTag.equals("status")) {
             mWord = intent.getStringExtra("word");
@@ -103,7 +104,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
             mWord = mFailWords.get(0);
 
         setEnvironment(mWord);
-
         playPageAdapter = new PlayPageAdapter(getSupportFragmentManager(), mFailWords, findHighScore(mFailWords));
 
         viewPager = findViewById(R.id.viewpager);

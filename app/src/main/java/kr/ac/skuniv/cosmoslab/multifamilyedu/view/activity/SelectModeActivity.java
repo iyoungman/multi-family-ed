@@ -1,6 +1,7 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -31,11 +32,14 @@ public class SelectModeActivity extends AppCompatActivity {
     TextView textView;
 
     private UserController userController;
+    private SharedPreferences achievementSharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_mode);
+
+        achievementSharedPreferences = getSharedPreferences("achievement", MODE_PRIVATE);
 
         startBtn = findViewById(R.id.start_button);
         statusBtn = findViewById(R.id.day_status_button);
@@ -85,8 +89,10 @@ public class SelectModeActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK)
+        if(resultCode == RESULT_OK) {
             mWordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
+            setAchievementSharedPreferences(mWordInfoDto.getWordlist(), mWordInfoDto.getWordpassinfo());
+        }
     }
 
     private String checkPassDay(WordInfoDto wordInfoDto){
@@ -110,6 +116,19 @@ public class SelectModeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    private void setAchievementSharedPreferences(List<String> wordList, Map<String, String> passInfo){
+        int wordCnt = wordList.size();
+        int passCnt = 0;
+        for(int i = 0 ; i<wordCnt ; i++){
+            if(passInfo.get(wordList.get(i)).equals("합격"))
+                passCnt++;
+        }
+
+        SharedPreferences.Editor editor = achievementSharedPreferences.edit();
+        editor.putString(mDay, (int)(((double)passCnt/(double)wordCnt)*100) + "%");
+        editor.commit();
     }
 
     @Override
