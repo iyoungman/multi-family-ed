@@ -85,7 +85,9 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         mDay = intent.getStringExtra("day");
         mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
 
-        mFailWords = findFailWords();
+        //        mFailWords = findFailWords();
+
+        mFailWords = mWordInfoDto.getWordlist();
 
         if(mTag.equals("status")) {
             mWord = intent.getStringExtra("word");
@@ -300,7 +302,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         List<String> renewalFailWords = new ArrayList<>();
         for(int i = 0; i< leng ; i++)
             renewalFailWords.add(failWords.get(indexArr[i]));
-
 
         return renewalFailWords;
     }

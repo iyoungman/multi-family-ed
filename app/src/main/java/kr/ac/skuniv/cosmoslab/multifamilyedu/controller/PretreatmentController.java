@@ -228,7 +228,6 @@ public class PretreatmentController {
         double graphRatio = 0.0;
         graphRatio = getAverageFromHistogram(originalWaveData, originalWaveData.length) / (double) (getAverageFromHistogram(recordWaveData, recordWaveData.length));//최댓값으로 비율 구함
 
-
         //비율 구하기
         graphRatio = Math.round(graphRatio * 100) / 100.0;//소수점 둘째자리까지 반올림
         graphRatio = Math.abs(graphRatio);//절대값

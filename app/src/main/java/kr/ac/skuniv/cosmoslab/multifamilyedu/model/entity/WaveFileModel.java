@@ -1,9 +1,10 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity;
 
+import lombok.Getter;
+
 /**
  * Created by chunso on 2018-11-19.
  */
-
 public enum  WaveFileModel {
     가방, 가수, 가위, 감, 개구리, 거미, 거미줄, 거북, 경찰, 고구마,
     고기, 고양이, 고추, 곡식, 공항, 구르다, 구름, 국, 국자, 궁궐,
@@ -26,6 +27,6 @@ public enum  WaveFileModel {
     추수하다, 치약, 치즈, 친구, 침대, 칫솔, 카드, 카메라, 컴퓨터, 컵,
     코끼리, 코트, 타다, 타원, 타조, 택시, 텔레비젼, 톱, 파도, 파리,
     포도, 풍선, 피리, 피아노, 하마, 하모니카, 학교, 할아버지, 해, 해안,
-    혀, 협동하다, 호수, 확대하다, 환자
+    혀, 협동하다, 호수, 확대하다, 환자;
 
 }
