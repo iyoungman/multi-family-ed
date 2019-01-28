@@ -52,7 +52,10 @@ public class WordPageAdapter extends BaseAdapter {
         TextView highestScoreTextView = convertView.findViewById(R.id.highest_score_textView);
 
         wordTextView.setText(wordModels.get(position).getWord());
-        passTextView.setText(wordModels.get(position).getPass());
+        if(wordModels.get(position).getPass().equals("합격"))
+            passTextView.setText("통과");
+        else
+            passTextView.setText("-");
         highestScoreTextView.setText(String.valueOf(wordModels.get(position).getHighestScore()));
 
         return convertView;

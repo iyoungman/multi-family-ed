@@ -12,6 +12,8 @@ import java.util.List;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
+
 /**
  * Created by chunso on 2019-01-09.
  */

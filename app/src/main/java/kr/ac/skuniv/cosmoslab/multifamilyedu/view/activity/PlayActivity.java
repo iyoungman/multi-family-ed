@@ -16,12 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,6 +34,9 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayStatusActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.RecordActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.PlayFragment;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
@@ -85,9 +90,8 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         mDay = intent.getStringExtra("day");
         mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
 
-        //        mFailWords = findFailWords();
-
-        mFailWords = mWordInfoDto.getWordlist();
+//        mFailWords = findFailWords();
+        mFailWords = new ArrayList<>(mWordInfoDto.getWordlist());
 
         if(mTag.equals("status")) {
             mWord = intent.getStringExtra("word");
@@ -303,6 +307,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         for(int i = 0; i< leng ; i++)
             renewalFailWords.add(failWords.get(indexArr[i]));
 
+
         return renewalFailWords;
     }
 
@@ -346,7 +351,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
             map.put(passWord.get(i), "합격");
         return map;
     }
-
     public void setEnvironment(String word) {
         mOriginalPath = FILE_PATH + "/ORIGINAL/" + word + ".wav";
         mRecordPath = FILE_PATH + "/RECORD/" + word + ".wav";

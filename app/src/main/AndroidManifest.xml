@@ -20,9 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <activity
-            android:name=".view.activity.SplashActivity"
+        <activity android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,16 +28,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.SigninActivity" />
-        <activity android:name=".view.activity.SignupActivity" />
-        <activity android:name=".view.activity.PlayActivity" />
-        <activity android:name=".view.activity.DayActivity" />
+        <activity android:name=".view.activity.SigninActivity"/>
         <activity
-            android:name=".view.activity.RecordActivity"
-            android:theme="@android:style/Theme.Dialog" />
-        <activity android:name=".view.activity.DayStatusActivity" />
-        <activity android:name=".view.activity.SelectModeActivity" />
-        <activity android:name=".view.activity.HelpActivity" />
+            android:name=".view.activity.SignupActivity"
+            android:label="@string/signup_name" />
+        <activity
+            android:name=".view.activity.PlayActivity"
+            android:label="@string/play_name" />
+        <activity android:name=".view.activity.DayActivity" />
+        <activity android:name=".view.activity.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".view.activity.DayStatusActivity"/>
+        <activity android:name=".view.activity.SelectModeActivity"/>
+        <activity android:name=".view.activity.HelpActivity"/>
     </application>
 
 </manifest>
