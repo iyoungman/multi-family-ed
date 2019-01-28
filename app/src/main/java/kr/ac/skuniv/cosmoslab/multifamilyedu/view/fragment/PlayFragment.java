@@ -36,7 +36,7 @@ public class PlayFragment extends Fragment implements PlayListener {
 
     private String TAG = "PlayFragment";
 
-    public interface FragmentListener{
+    public interface FragmentListener {
         void onReceivedData(String word, String score);
     }
 
@@ -63,8 +63,8 @@ public class PlayFragment extends Fragment implements PlayListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(getActivity() != null && getActivity() instanceof FragmentListener)
-            mFragmentListener = (FragmentListener)getActivity();
+        if (getActivity() != null && getActivity() instanceof FragmentListener)
+            mFragmentListener = (FragmentListener) getActivity();
     }
 
     @Override
@@ -91,11 +91,10 @@ public class PlayFragment extends Fragment implements PlayListener {
         mHighestScore = Integer.parseInt(bundle.getString("score"));
         setEnvironment(mWord);
 
-        if(mTag.equals("both")) {
+        if (mTag.equals("both")) {
             imageView.setImageBitmap(onDraw(mContext, mOriginalPath, mRecordPath));
             blink(mFinalScore);
-        }
-        else
+        } else
             imageView.setImageBitmap(onDrawOriginalWaveForm());
 
         return view;
@@ -103,12 +102,12 @@ public class PlayFragment extends Fragment implements PlayListener {
 
     @Override
     public void onRecord(String word) {
-        if(word.equals(mWord)) {
+        if (word.equals(mWord)) {
             Bitmap bitmap = onDraw(mContext, mOriginalPath, mRecordPath);
-            if(bitmap != null)
+            if (bitmap != null)
                 imageView.setImageBitmap(bitmap);
 
-            if(mFinalScore > mHighestScore) {
+            if (mFinalScore > mHighestScore) {
                 mFragmentListener.onReceivedData(mWord, String.valueOf(mFinalScore));
                 highestScoreTV.setText(String.valueOf(mFinalScore));
                 mHighestScore = mFinalScore;
@@ -144,10 +143,16 @@ public class PlayFragment extends Fragment implements PlayListener {
         PretreatmentController pretreatmentController = new PretreatmentController(context);
         try {
             if (!pretreatmentController.run(originalPath, recordPath)) {
-                Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+                if (pretreatmentController.getNormalizeRatio() >= 2.0) {
+                    Toast.makeText(context, "녹음이 너무 작습니다. 녹음을 더 크게 해주십시오...", Toast.LENGTH_LONG).show();
+                } else if (pretreatmentController.getNormalizeRatio() <= 0.5) {
+                    Toast.makeText(context, "녹음이 너무 큽니다. 녹음을 더 작게 해주십시오...", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+                }
                 return null;
             }
-        }catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e){
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e) {
             Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
             Log.d(TAG, "onDraw: " + e.getMessage());
         }
@@ -202,13 +207,12 @@ public class PlayFragment extends Fragment implements PlayListener {
         highestScoreTV.setText(String.valueOf(mHighestScore));
     }
 
-    public void blink(int score){
-        scoreTV.setText("점수: "+score);
+    public void blink(int score) {
+        scoreTV.setText("점수: " + score);
         Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.blink_animation);
-        if(score > PASS_SCORE) {
+        if (score > PASS_SCORE) {
             passTv.setText("통과");
-        }
-        else {
+        } else {
             passTv.setText("불통과");
         }
         passTv.startAnimation(animation);
@@ -218,10 +222,16 @@ public class PlayFragment extends Fragment implements PlayListener {
         PretreatmentController pretreatmentController = new PretreatmentController(context);
         try {
             if (!pretreatmentController.run(originalPath, recordPath)) {
-                Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+                if (pretreatmentController.getNormalizeRatio() >= 2.0) {
+                    Toast.makeText(context, "녹음이 너무 작습니다. 녹음을 더 크게 해주십시오...", Toast.LENGTH_LONG).show();
+                } else if (pretreatmentController.getNormalizeRatio() <= 0.5) {
+                    Toast.makeText(context, "녹음이 너무 큽니다. 녹음을 더 작게 해주십시오...", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
+                }
                 return null;
             }
-        }catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e){
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException | ArithmeticException e) {
             Toast.makeText(context, "녹음이 잘못되었습니다. 녹음을 다시 해주십시오...", Toast.LENGTH_LONG).show();
             Log.d(TAG, "onDraw: " + e.getMessage());
         }
@@ -264,11 +274,11 @@ public class PlayFragment extends Fragment implements PlayListener {
         List<Integer> originCheckPoint = mOriginalModel.getCheckPoints();
         List<Integer> recordCheckPoint = mRecordModel.getCheckPoints();
 
-        for(int i = 0; i< originCheckPoint.size(); i++ ){
-            originalCanvas.drawLine(originCheckPoint.get(i), bitmapY -mOriginalModel.getWaveData()[originCheckPoint.get(i)], originCheckPoint.get(i), bitmapY, originalWaveform);
+        for (int i = 0; i < originCheckPoint.size(); i++) {
+            originalCanvas.drawLine(originCheckPoint.get(i), bitmapY - mOriginalModel.getWaveData()[originCheckPoint.get(i)], originCheckPoint.get(i), bitmapY, originalWaveform);
         }
 
-        for(int i = 0; i< recordCheckPoint.size(); i++ ){
+        for (int i = 0; i < recordCheckPoint.size(); i++) {
             recodeCanvas.drawLine(recordCheckPoint.get(i), bitmapY - mRecordModel.getWaveData()[recordCheckPoint.get(i)], recordCheckPoint.get(i), bitmapY, recodeWaveform);
         }
 
@@ -278,11 +288,11 @@ public class PlayFragment extends Fragment implements PlayListener {
         List<Integer> originHidenCheckPoint = mOriginalModel.getHidenCheckPoints();
         List<Integer> recordHidenCheckPoint = mRecordModel.getHidenCheckPoints();
 
-        for(int i = 0; i< originHidenCheckPoint.size(); i++ ){
-            originalCanvas.drawLine(originHidenCheckPoint.get(i), bitmapY -mOriginalModel.getWaveData()[originHidenCheckPoint.get(i)], originHidenCheckPoint.get(i), bitmapY, originalWaveform);
+        for (int i = 0; i < originHidenCheckPoint.size(); i++) {
+            originalCanvas.drawLine(originHidenCheckPoint.get(i), bitmapY - mOriginalModel.getWaveData()[originHidenCheckPoint.get(i)], originHidenCheckPoint.get(i), bitmapY, originalWaveform);
         }
 
-        for(int i = 0; i< recordHidenCheckPoint.size(); i++ ){
+        for (int i = 0; i < recordHidenCheckPoint.size(); i++) {
             recodeCanvas.drawLine(recordHidenCheckPoint.get(i), bitmapY - mRecordModel.getWaveData()[recordHidenCheckPoint.get(i)], recordHidenCheckPoint.get(i), bitmapY, recodeWaveform);
         }
         return waveForm;

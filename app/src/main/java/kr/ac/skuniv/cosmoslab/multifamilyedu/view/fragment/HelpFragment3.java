@@ -12,7 +12,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 public class HelpFragment3 extends Fragment {
 
     private WebView webView1;
-    private final String explain = "<html><body><p align=\"justify\">" + "학습 시작하기 : 해당 DAY에 맞는 단어가 랜덤으로 선택되어 학습을 시작합니다. <p> 진행현황 보기 : 선택한 DAY의 단어목록을 확인합니다." + "</p></body></html>";
+    private final String explain = "<html><body><p align=\"justify\">" + "학습 시작하기 : 해당 DAY에 맞는 단어가 차례대로 선택되어 학습을 시작합니다. <p> 진행현황 보기 : 선택한 DAY의 단어목록을 확인합니다." + "</p></body></html>";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

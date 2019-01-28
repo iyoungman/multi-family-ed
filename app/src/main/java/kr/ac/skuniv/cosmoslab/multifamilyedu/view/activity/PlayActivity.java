@@ -34,6 +34,9 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayStatusActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.RecordActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.PlayFragment;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
@@ -78,7 +81,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         sharedPreferences = getSharedPreferences("wordScore", MODE_PRIVATE);
-
         fileController = new FileController(getApplicationContext());
         userController = new UserController(getApplicationContext());
 
@@ -104,6 +106,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
             mWord = mFailWords.get(0);
 
         setEnvironment(mWord);
+
         playPageAdapter = new PlayPageAdapter(getSupportFragmentManager(), mFailWords, findHighScore(mFailWords));
 
         viewPager = findViewById(R.id.viewpager);
@@ -349,11 +352,6 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         return map;
     }
     public void setEnvironment(String word) {
-        if (!fileController.confirmFile(word + ".wav")) {
-            Toast.makeText(getApplicationContext(), "파일 없으므로 다운로드", Toast.LENGTH_SHORT).show();
-            fileController.downloadFileByFileName(word + ".wav");
-        }
-
         mOriginalPath = FILE_PATH + "/ORIGINAL/" + word + ".wav";
         mRecordPath = FILE_PATH + "/RECORD/" + word + ".wav";
         mPCMPath = FILE_PATH + "/RECORD/" + word + ".pcm";

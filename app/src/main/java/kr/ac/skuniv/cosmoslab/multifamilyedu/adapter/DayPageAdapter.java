@@ -3,7 +3,6 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +18,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SelectModeActivity;
-
-import static android.content.Context.MODE_PRIVATE;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SelectModeActivity;
 
 /**
  * Created by chunso on 2019-01-02.

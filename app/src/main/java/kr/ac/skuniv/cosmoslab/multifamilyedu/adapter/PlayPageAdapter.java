@@ -9,8 +9,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayListener;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.PlayFragment;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.PlayListener;
 
 /**
  * Created by chunso on 2019-01-12.
