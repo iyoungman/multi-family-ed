@@ -3,9 +3,12 @@
 
     <item android:drawable="@android:color/holo_orange_dark" />
 
-    <item>
-        <bitmap android:src="@mipmap/ic_loading1"
-            android:gravity="center" />
+    <item android:gravity="center">
+        <bitmap android:src="@mipmap/ic_loading1" />
+    </item>
+
+    <item android:top="300dp">
+        <bitmap android:src="@drawable/text" />
     </item>
 
 </layer-list>

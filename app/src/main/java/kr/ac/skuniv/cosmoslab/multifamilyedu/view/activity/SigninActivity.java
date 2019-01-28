@@ -1,4 +1,4 @@
-package kr.ac.skuniv.cosmoslab.multifamilyedu.view;
+package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -17,13 +17,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.UserModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SignupActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "SigninActivity";
@@ -70,6 +70,11 @@ public class SigninActivity extends AppCompatActivity {
         fileController.createFilePath();
 
         if (isFirstRun) {
+            SharedPreferences pass = getSharedPreferences("wordScore", MODE_PRIVATE);
+            SharedPreferences.Editor passEditor = pass.edit();
+            passEditor.clear();
+            passEditor.apply();
+
             editor.putBoolean("isFirstRun", false);
             editor.apply();
             initSetting();
@@ -142,6 +147,7 @@ public class SigninActivity extends AppCompatActivity {
         }
     }
 
+
     private void initSetting() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("도움말");
@@ -162,5 +168,4 @@ public class SigninActivity extends AppCompatActivity {
                 });
         builder.show();
     }
-
 }
