@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
+
 /**
  * Created by chunso on 2019-01-09.
  */

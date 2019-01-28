@@ -3,20 +3,25 @@ package kr.ac.skuniv.cosmoslab.multifamilyedu.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SelectModeActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SelectModeActivity;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by chunso on 2019-01-02.
@@ -27,14 +32,16 @@ public class DayPageAdapter extends BaseAdapter {
     private ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
     private ArrayList<Boolean> buttonStatus = new ArrayList<Boolean>();
     private boolean[] enableBtn;
+    Map<String, String> achieveMap;
     private Context mContext;
     String TAG = "TAG";
 
 
-    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels, String userId, Context context) {
+    public DayPageAdapter(ArrayList<WordPassModel> wordPassModels, String userId, Context context, Map<String, String> achieveMap) {
         this.wordPassModels = wordPassModels;
         this.userId = userId;
         this.mContext = context;
+        this.achieveMap = achieveMap;
         enableBtn = new boolean[wordPassModels.size()];
         for (int i = 0; i < wordPassModels.size(); i++) {
             buttonStatus.add(false);
@@ -67,6 +74,7 @@ public class DayPageAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.listview_day, parent, false);
         }
         Button button = convertView.findViewById(R.id.dayBtn);
+        TextView textView = convertView.findViewById(R.id.achievement_textview);
 
         if(buttonStatus.get(position)){
             button.setEnabled(enableBtn[position]);
@@ -78,7 +86,13 @@ public class DayPageAdapter extends BaseAdapter {
         }
         final WordPassModel wordPassModel = wordPassModels.get(position);
 
-        button.setText(wordPassModels.get(position).getDay());
+        String day = wordPassModel.getDay();
+        button.setText(day);
+        if(achieveMap.get(day) == null)
+            textView.setText("학습 진행도: 0%");
+        else
+            textView.setText("학습 진행도: " + achieveMap.get(day));
+
         if(!enableBtn[position])
             button.setEnabled(false);
 

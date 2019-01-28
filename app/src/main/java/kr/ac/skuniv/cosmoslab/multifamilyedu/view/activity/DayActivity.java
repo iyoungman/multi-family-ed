@@ -1,6 +1,7 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.adapter.DayPageAdapter;
@@ -26,6 +29,7 @@ public class DayActivity extends AppCompatActivity {
     private String mUserId;
     private String mUserPw;
     private UserController userController;
+    private SharedPreferences achievementSharedPrefferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,6 +39,8 @@ public class DayActivity extends AppCompatActivity {
         UserModel userModel = (UserModel)intent.getSerializableExtra("login_model");
         ArrayList<WordPassModel> wordPassModels = new ArrayList<>();
         userController = new UserController(getApplicationContext());
+
+        achievementSharedPrefferences = getSharedPreferences("achievement", MODE_PRIVATE);
 
         if(userModel != null){
             mUserId = userModel.getId();
@@ -46,7 +52,7 @@ public class DayActivity extends AppCompatActivity {
         }
 
         ListView listView = findViewById(R.id.listView);
-        DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId(), getApplicationContext());
+        DayPageAdapter adapter = new DayPageAdapter(wordPassModels, userModel.getId(), getApplicationContext(), (Map<String, String>) achievementSharedPrefferences.getAll());
 
         listView.setAdapter(adapter);
     }
@@ -83,10 +89,15 @@ public class DayActivity extends AppCompatActivity {
                     return;
                 }
                 ArrayList<WordPassModel> wordPassModels = setEnviroment(++reciveDay);
-                DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext());
+                DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext(), (Map<String, String>) achievementSharedPrefferences.getAll());
                 ListView listview = findViewById(R.id.listView);
                 listview.setAdapter(adapter);
                 mDay = String.valueOf(reciveDay);
+            }else{
+                ArrayList<WordPassModel> wordPassModels = setEnviroment(reciveDay);
+                DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext(), (Map<String, String>) achievementSharedPrefferences.getAll());
+                ListView listview = findViewById(R.id.listView);
+                listview.setAdapter(adapter);
             }
         }
     }

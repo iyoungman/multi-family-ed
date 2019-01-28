@@ -2,15 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-    android:padding="20dp">
+    android:weightSum="1"
+    android:layout_margin="0dp"
+    android:padding="15dp">
 
 
     <TextView
         android:id="@+id/word_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.4"
         android:gravity="center"
         android:text="TextView"
         android:textSize="18sp"
@@ -18,9 +19,9 @@
 
     <TextView
         android:id="@+id/pass_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.3"
         android:gravity="center"
         android:text="TextView"
         android:textSize="18sp"
@@ -28,9 +29,9 @@
 
     <TextView
         android:id="@+id/highest_score_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.3"
         android:gravity="center"
         android:text="TextView"
         android:textSize="18sp"
