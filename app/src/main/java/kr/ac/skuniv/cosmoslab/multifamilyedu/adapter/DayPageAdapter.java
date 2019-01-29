@@ -18,7 +18,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SelectModeActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SelectModeActivity;
 
 /**
  * Created by chunso on 2019-01-02.

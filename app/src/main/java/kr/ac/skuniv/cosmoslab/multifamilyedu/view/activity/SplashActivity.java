@@ -1,8 +1,12 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -11,8 +15,6 @@ import java.util.List;
 
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
-
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SigninActivity;
 
 /**
  * Created by chunso on 2019-01-09.
@@ -24,12 +26,18 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int permissionReadStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionWriteStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionAudio = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+        if (permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, 2);
+        }
 
         fileController = new FileController(getApplicationContext());
         fileController.createFilePath();
 
         if (fileSetting()) {
-            Toast.makeText(getApplicationContext(), "정상적으로 실행됩니다.", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "정상적으로 실행됩니다.", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), "파일 다운로드 실패.. 인터넷을 연결하고 어플을 다시 시작해주세요.", Toast.LENGTH_LONG).show();
         }
