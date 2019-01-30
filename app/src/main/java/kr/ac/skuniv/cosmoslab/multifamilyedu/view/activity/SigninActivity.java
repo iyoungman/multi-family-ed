@@ -61,7 +61,7 @@ public class SigninActivity extends AppCompatActivity {
         userController = new UserController(getApplicationContext());
         fileController = new FileController(getApplicationContext());
 
-        fileController.createFilePath();
+//        fileController.createFilePath();
 
         if (isFirstRun) {
             SharedPreferences pass = getSharedPreferences("wordScore", MODE_PRIVATE);

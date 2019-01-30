@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.15"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="1">
@@ -17,8 +17,8 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PLAY 화면"
-            android:textSize="46sp" />
+            android:text="진행현황 보기"
+            android:textSize="40sp" />
 
     </LinearLayout>
 
@@ -34,7 +34,7 @@
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/help_play"
+            android:src="@drawable/help_list"
             android:scaleType="fitXY" />
 
     </LinearLayout>
@@ -43,7 +43,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.3"
+        android:layout_weight="0.2"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="1">
@@ -52,6 +52,24 @@
             android:id="@+id/webView1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.15"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/closeBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button"
+            android:text="도움말 종료"
+            android:textSize="15sp" />
 
     </LinearLayout>
 

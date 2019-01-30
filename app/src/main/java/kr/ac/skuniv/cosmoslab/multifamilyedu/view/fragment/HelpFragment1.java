@@ -1,5 +1,6 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,8 +26,10 @@ public class HelpFragment1 extends Fragment {
 
         webView1 = (WebView) rootView.findViewById(R.id.webView1);
         webView2 = (WebView) rootView.findViewById(R.id.webView2);
-        webView1.getSettings().setDefaultFontSize(17);
-        webView2.getSettings().setDefaultFontSize(17);
+        webView1.getSettings().setDefaultFontSize(20);
+        webView2.getSettings().setDefaultFontSize(20);
+        webView1.setBackgroundColor(0x00FFFFFF);
+        webView2.setBackgroundColor(0x00FFFFFF);
         webView1.loadData(introduce, "text/html", "utf-8");
         webView2.loadData(precautions, "text/html", "utf-8");
 

@@ -1,5 +1,6 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
@@ -382,16 +383,22 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         mPCMPath = FILE_PATH + "/RECORD/" + word + ".pcm";
     }
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_upgrade, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_move_day:
+                Intent dayIntent = new Intent();
+                dayIntent.putExtra("result", "1111");
+                setResult(1111, dayIntent);
+                finish();
+                return true;
             case R.id.action_help:
-                Intent intent = new Intent(PlayActivity.this, HelpActivity.class);
-                startActivity(intent);
+                Intent helpIntent = new Intent(PlayActivity.this, HelpActivity.class);
+                startActivity(helpIntent);
                 return true;
             case R.id.action_signout:
                 userController.signoutUser();

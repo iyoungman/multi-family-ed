@@ -92,6 +92,10 @@ public class SelectModeActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK) {
             mWordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
             setAchievementSharedPreferences(mWordInfoDto.getWordlist(), mWordInfoDto.getWordpassinfo());
+        } else if(requestCode == 1111 && resultCode == 1111) {
+            finish();
+        } else if(requestCode == 3000 && resultCode == 3000) {
+            finish();
         }
     }
 

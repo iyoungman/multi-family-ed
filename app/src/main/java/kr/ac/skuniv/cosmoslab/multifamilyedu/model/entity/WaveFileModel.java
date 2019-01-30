@@ -5,6 +5,7 @@ import lombok.Getter;
 /**
  * Created by chunso on 2018-11-19.
  */
+@Getter
 public enum  WaveFileModel {
     가방, 가수, 가위, 감, 개구리, 거미, 거미줄, 거북, 경찰, 고구마,
     고기, 고양이, 고추, 곡식, 공항, 구르다, 구름, 국, 국자, 궁궐,

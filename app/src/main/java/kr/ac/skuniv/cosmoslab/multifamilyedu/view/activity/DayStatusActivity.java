@@ -112,13 +112,19 @@ public class DayStatusActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_upgrade, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_move_day:
+                Intent dayIntent = new Intent();
+                dayIntent.putExtra("result", "3000");
+                setResult(3000, dayIntent);
+                finish();
+                return true;
             case R.id.action_signout:
                 userController.signoutUser();
                 finish();
