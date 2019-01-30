@@ -17,8 +17,8 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="진행현황 보기"
-            android:textSize="46sp" />
+            android:text="PLAY 화면"
+            android:textSize="40sp" />
 
     </LinearLayout>
 
@@ -34,7 +34,7 @@
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/help_list"
+            android:src="@drawable/help_play"
             android:scaleType="fitXY" />
 
     </LinearLayout>

@@ -19,7 +19,8 @@ public class HelpFragment3 extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_help3, container, false);
 
         webView1 = (WebView) rootView.findViewById(R.id.webView1);
-        webView1.getSettings().setDefaultFontSize(17);
+        webView1.getSettings().setDefaultFontSize(20);
+        webView1.setBackgroundColor(0x00FFFFFF);
         webView1.setHorizontalScrollBarEnabled(false);
         webView1.setVerticalScrollBarEnabled(false);
         webView1.loadData(explain, "text/html", "utf-8");

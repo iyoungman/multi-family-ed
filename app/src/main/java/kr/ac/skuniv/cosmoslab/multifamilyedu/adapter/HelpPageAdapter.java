@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment1;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment2;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment3;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment4;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment5;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.HelpFragment4;
 
 public class HelpPageAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;

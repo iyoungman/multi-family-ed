@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="모드 선택화면"
-            android:textSize="46sp" />
+            android:textSize="40sp" />
 
     </LinearLayout>
 
