@@ -93,6 +93,13 @@ public class SelectModeActivity extends AppCompatActivity {
             mWordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
             setAchievementSharedPreferences(mWordInfoDto.getWordlist(), mWordInfoDto.getWordpassinfo());
         } else if(requestCode == 1111 && resultCode == 1111) {
+            mWordInfoDto = (WordInfoDto) data.getSerializableExtra("word_info");
+            setAchievementSharedPreferences(mWordInfoDto.getWordlist(), mWordInfoDto.getWordpassinfo());
+
+            Intent intent = new Intent();
+            intent.putExtra("day", mDay.substring(3));
+            intent.putExtra("pass", checkPassDay(mWordInfoDto));
+            setResult(RESULT_OK, intent);
             finish();
         } else if(requestCode == 3000 && resultCode == 3000) {
             finish();

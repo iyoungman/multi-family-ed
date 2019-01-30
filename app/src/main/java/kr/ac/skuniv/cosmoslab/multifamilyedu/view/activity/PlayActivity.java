@@ -391,7 +391,9 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_move_day:
+                mWordInfoDto.setWordpassinfo(syncData(mPassWords));
                 Intent dayIntent = new Intent();
+                dayIntent.putExtra("word_info", mWordInfoDto);
                 dayIntent.putExtra("result", "1111");
                 setResult(1111, dayIntent);
                 finish();
