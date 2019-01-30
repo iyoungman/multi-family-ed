@@ -8,7 +8,7 @@
     </item>
 
     <item android:top="300dp">
-        <bitmap android:src="@drawable/text" />
+        <bitmap android:src="@drawable/text"/>
     </item>
 
 </layer-list>
