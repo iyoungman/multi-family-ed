@@ -92,7 +92,7 @@ public class PlayFragment extends Fragment implements PlayListener {
         setEnvironment(mWord);
 
         if (mTag.equals("both")) {
-            imageView.setImageBitmap(onDrawTest(mContext, mOriginalPath, mRecordPath));
+            imageView.setImageBitmap(onDraw(mContext, mOriginalPath, mRecordPath));
             blink(mFinalScore);
         } else
             imageView.setImageBitmap(onDrawOriginalWaveForm());
@@ -103,7 +103,7 @@ public class PlayFragment extends Fragment implements PlayListener {
     @Override
     public void onRecord(String word) {
         if (word.equals(mWord)) {
-            Bitmap bitmap = onDrawTest(mContext, mOriginalPath, mRecordPath);
+            Bitmap bitmap = onDraw(mContext, mOriginalPath, mRecordPath);
             if (bitmap != null)
                 imageView.setImageBitmap(bitmap);
 
