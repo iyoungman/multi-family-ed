@@ -73,7 +73,6 @@ public class AnalysisWaveFormController {
             가중치 알고리즘 필요..............
          */
         finalScore = (int)((areaScore*0.5) + (shapeScore*0.5));
-        Toast.makeText(context.getApplicationContext(), "모양점수 : " + String.valueOf(shapeScore) + " 면적점수 : " + String.valueOf(areaScore) , Toast.LENGTH_LONG).show();
 
         return finalScore;
     }

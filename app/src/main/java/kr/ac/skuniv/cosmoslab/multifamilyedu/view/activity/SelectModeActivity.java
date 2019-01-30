@@ -51,8 +51,8 @@ public class SelectModeActivity extends AppCompatActivity {
         mWordInfoDto = (WordInfoDto) intent.getSerializableExtra("word_info");
         userController = new UserController(getApplicationContext());
 
-        textView.setText(mDay);
-
+        String tmp = mDay.substring(3);
+        textView.setText("Day " + tmp);
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
