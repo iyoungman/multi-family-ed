@@ -112,18 +112,10 @@ public class PretreatmentController {
 
         //분석용 데이터 셋팅
         int count = 0;
-        while(count < 10){
+        while(count < 10) {
             originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 1));
             recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 1));
             count++;
-        }
-
-        recordModel.setWaveData(
-                normalizeSoundSize(originalModel.getWaveData(), recordModel.getWaveData())
-        );
-
-        if (normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
-            return false;
         }
 
         originalModel = findStartIndexAndEndIndex(originalModel, NOISE_BOUND);
@@ -131,21 +123,28 @@ public class PretreatmentController {
 
         syncSpeechTime(originalModel, recordModel);
 
+        mRecordModel.setWaveData(
+                normalizeSoundSize(mOriginalModel.getWaveData(), mRecordModel.getWaveData())
+        );
+        if (normalizeRatio >= 2.0 || normalizeRatio <= 0.5) {
+            return false;
+        }
+
         count = 0;
         while (count < 5) {
-            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 4));
-            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 4));
+            mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 4));
+            mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(), 4));
             count++;
         }
 
         count = 0;
         while (count < 30) {
-            originalModel.setWaveData(smoothingForDrawWaveform(originalModel.getWaveData(), 2));
-            recordModel.setWaveData(smoothingForDrawWaveform(recordModel.getWaveData(), 2));
+            mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 2));
+            mRecordModel.setWaveData(smoothingForDrawWaveform(mRecordModel.getWaveData(), 2));
             count++;
         }
-        mOriginalModel.setWaveData(originalModel.getWaveData());
-        mRecordModel.setWaveData(recordModel.getWaveData());
+
+
 /*        count = 0;
         while (count < 5) {
             mOriginalModel.setWaveData(smoothingForDrawWaveform(mOriginalModel.getWaveData(), 4));
@@ -163,7 +162,7 @@ public class PretreatmentController {
         mRecordModel.setFirstSlopeData(recodeSlope);
 
         count = 0;
-        while (count < 20) {
+        while (count < 30) {
             originalSlope = smoothingForDrawWaveform(originalSlope, 2);
             recodeSlope = smoothingForDrawWaveform(recodeSlope, 2);
             count++;

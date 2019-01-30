@@ -94,7 +94,7 @@ public class DayActivity extends AppCompatActivity {
                 listview.setAdapter(adapter);
                 mDay = String.valueOf(reciveDay);
             }else{
-                ArrayList<WordPassModel> wordPassModels = setEnviroment(reciveDay);
+                ArrayList<WordPassModel> wordPassModels = setEnviroment(nowDay);
                 DayPageAdapter adapter = new DayPageAdapter(wordPassModels, mUserId, getApplicationContext(), (Map<String, String>) achievementSharedPrefferences.getAll());
                 ListView listview = findViewById(R.id.listView);
                 listview.setAdapter(adapter);

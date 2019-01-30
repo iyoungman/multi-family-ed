@@ -18,7 +18,7 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.DayStatusController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WordPassModel;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.SelectModeActivity;
+import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.SelectModeActivity;
 
 /**
  * Created by chunso on 2019-01-02.
@@ -84,7 +84,9 @@ public class DayPageAdapter extends BaseAdapter {
         final WordPassModel wordPassModel = wordPassModels.get(position);
 
         String day = wordPassModel.getDay();
-        button.setText(day);
+        String tmp = day.substring(3);
+        button.setText("Day " + tmp);
+        button.setAllCaps(false);
         if(achieveMap.get(day) == null)
             textView.setText("학습 진행도: 0%");
         else

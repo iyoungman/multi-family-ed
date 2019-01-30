@@ -12,10 +12,14 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RatingBar;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.DataInputStream;
@@ -49,7 +53,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
     private String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MultiFamily";;
     private final int PASS_SCORE = 70;
 
-    ViewPager viewPager;
+    ViewPager viewPager; SeekBar seekBar;
     private Button playBtn, recordBtn, recordPlayBtn, submitBtn;
     private String mTag, mWord, mRecordPath, mOriginalPath, mPCMPath;
     private String mUserId, mDay;
@@ -75,6 +79,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
     UserController userController;
 
     int mPosition;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,7 +113,15 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
         setEnvironment(mWord);
 
         playPageAdapter = new PlayPageAdapter(getSupportFragmentManager(), mFailWords, findHighScore(mFailWords));
-
+        seekBar = findViewById(R.id.seekBar);
+        seekBar.setMax(mFailWords.size()-1);
+//        seekBar.incrementProgressBy(1);
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
         viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(playPageAdapter);
         viewPager.setCurrentItem(0);
@@ -124,6 +137,7 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
                 setEnvironment(mWord);
                 mPosition = position;
                 mHighestScore = sharedPreferences.getInt(mWord, 0);
+                seekBar.setProgress(position, true);
             }
 
             @Override
@@ -131,6 +145,8 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
 
             }
         });
+
+
 
         playBtn = findViewById(R.id.playBtn);
         playBtn.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +163,15 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
                 Intent intent = new Intent(getApplicationContext(), RecordActivity.class);
                 intent.putExtra("word", mWord);
                 startActivityForResult(intent, 1111);
+                if(isRecording){
+                    System.out.println(mPosition);
+                    System.out.println(mFailWords.size());
+                    if(mPosition == mFailWords.size()-1){
+                        Toast.makeText(getApplicationContext(),"학습완료", Toast.LENGTH_LONG).show();
+                        System.out.println("학습완료");
+                    }
+                }
+                isRecording = !isRecording;
             }
         });
 

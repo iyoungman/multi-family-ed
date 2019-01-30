@@ -21,25 +21,34 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".view.activity.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.SigninActivity"/>
+        <activity android:name=".view.activity.SigninActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.activity.SignupActivity"
-            android:label="@string/signup_name" />
+            android:label="@string/signup_name"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".view.activity.PlayActivity"
-            android:label="@string/play_name" />
-        <activity android:name=".view.activity.DayActivity" />
-        <activity android:name=".view.activity.RecordActivity" android:theme="@android:style/Theme.Dialog"/>
-        <activity android:name=".view.activity.DayStatusActivity"/>
-        <activity android:name=".view.activity.SelectModeActivity"/>
-        <activity android:name=".view.activity.HelpActivity"/>
+            android:label="@string/play_name"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.activity.DayActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.activity.RecordActivity" android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.activity.DayStatusActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.activity.SelectModeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".view.activity.HelpActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
