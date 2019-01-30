@@ -84,7 +84,9 @@ public class DayPageAdapter extends BaseAdapter {
         final WordPassModel wordPassModel = wordPassModels.get(position);
 
         String day = wordPassModel.getDay();
-        button.setText(day);
+        String tmp = day.substring(3);
+        button.setText("Day " + tmp);
+        button.setAllCaps(false);
         if(achieveMap.get(day) == null)
             textView.setText("학습 진행도: 0%");
         else
