@@ -77,7 +77,6 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     //회원가입 메소드

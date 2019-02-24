@@ -17,13 +17,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kr.ac.skuniv.cosmoslab.multifamilyedu.R;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.model.entity.WaveFileModel;
 
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "SigninActivity";
@@ -46,6 +42,13 @@ public class SigninActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
+        int permissionReadStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        int permissionWriteStorage = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionAudio = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+        if (permissionReadStorage == PackageManager.PERMISSION_DENIED || permissionWriteStorage == PackageManager.PERMISSION_DENIED || permissionAudio == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO}, 2);
+        }
+
         idEditText = (EditText) findViewById(R.id.idEditText);
         pwEditText = (EditText) findViewById(R.id.pwEditText);
         signinBtn = (Button) findViewById(R.id.loginBtn);
@@ -64,10 +67,10 @@ public class SigninActivity extends AppCompatActivity {
 //        fileController.createFilePath();
 
         if (isFirstRun) {
-            SharedPreferences pass = getSharedPreferences("wordScore", MODE_PRIVATE);
+            /*SharedPreferences pass = getSharedPreferences("wordScore", MODE_PRIVATE);
             SharedPreferences.Editor passEditor = pass.edit();
             passEditor.clear();
-            passEditor.apply();
+            passEditor.apply();*/
 
             editor.putBoolean("isFirstRun", false);
             editor.apply();

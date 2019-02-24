@@ -1,6 +1,5 @@
 package kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
@@ -13,13 +12,11 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -28,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,9 +35,6 @@ import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.FileController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.PlayController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.controller.UserController;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.model.dto.WordInfoDto;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.DayStatusActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.HelpActivity;
-import kr.ac.skuniv.cosmoslab.multifamilyedu.view.activity.RecordActivity;
 import kr.ac.skuniv.cosmoslab.multifamilyedu.view.fragment.PlayFragment;
 
 import static android.media.AudioFormat.ENCODING_PCM_16BIT;
@@ -215,7 +208,11 @@ public class PlayActivity extends AppCompatActivity implements PlayFragment.Frag
             playPageAdapter.update(mFailWords.get(mPosition), mPosition);
         }
         else if(requestCode == 3000){
-
+            /*Intent dayIntent = new Intent();
+            dayIntent.putExtra("result", "3000");
+            setResult(3000, dayIntent);
+            startActivityForResult(dayIntent, 3000);
+            finish();*/
         }
     }
 
